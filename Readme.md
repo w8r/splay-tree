@@ -134,25 +134,28 @@ npm run benchmark
 
 ```
 Insert (x1000)
-Bintrees x 3,742 ops/sec ±0.89% (90 runs sampled)
-Functional red black tree x 1,880 ops/sec ±4.02% (78 runs sampled)
-Google Closure library AVL x 622 ops/sec ±4.22% (81 runs sampled)
-AVL (current) x 6,151 ops/sec ±8.50% (72 runs sampled)
-- Fastest is AVL (current)
+Bintrees x 3,320 ops/sec ±4.69% (81 runs sampled)
+Functional red black tree x 1,717 ops/sec ±7.36% (71 runs sampled)
+Google Closure library AVL x 538 ops/sec ±7.55% (70 runs sampled)
+Splay (current) x 1,783 ops/sec ±6.07% (73 runs sampled)
+AVL x 4,790 ops/sec ±4.38% (76 runs sampled)
+- Fastest is AVL
 
 Random read (x1000)
-Bintrees x 7,371 ops/sec ±2.69% (83 runs sampled)
-Functional red black tree x 13,010 ops/sec ±2.93% (83 runs sampled)
-Google Closure library AVL x 27.63 ops/sec ±1.04% (49 runs sampled)
-AVL (current) x 12,921 ops/sec ±1.83% (86 runs sampled)
-- Fastest is AVL (current)
+Bintrees x 7,342 ops/sec ±2.72% (83 runs sampled)
+Functional red black tree x 12,263 ops/sec ±5.32% (77 runs sampled)
+Google Closure library AVL x 19.12 ops/sec ±12.82% (39 runs sampled)
+Splay (current) x 14,897 ops/sec ±1.16% (85 runs sampled)
+AVL x 14,381 ops/sec ±2.42% (88 runs sampled)
+- Fastest is Splay (current)
 
 Remove (x1000)
-Bintrees x 106,837 ops/sec ±0.74% (86 runs sampled)
-Functional red black tree x 25,368 ops/sec ±0.89% (88 runs sampled)
-Google Closure library AVL x 31,719 ops/sec ±1.21% (89 runs sampled)
-AVL (current) x 108,131 ops/sec ±0.70% (88 runs sampled)
-- Fastest is AVL (current)
+Bintrees x 99,828 ops/sec ±2.22% (83 runs sampled)
+Functional red black tree x 22,012 ops/sec ±4.16% (80 runs sampled)
+Splay (current) x 112,646 ops/sec ±4.04% (80 runs sampled)
+Google Closure library AVL x 25,676 ops/sec ±3.97% (75 runs sampled)
+AVL x 78,340 ops/sec ±2.44% (85 runs sampled)
+- Fastest is Splay (current)
 ```
 
 Adding google closure library to the benchmark is, of course, unfair, cause the

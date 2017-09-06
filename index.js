@@ -42,7 +42,7 @@ export default class SplayTree {
   }
 
 
-  splay(x) {
+  _splay(x) {
     while (x.parent) {
       if (!x.parent.parent) {
         if (x.parent.left === x) this.rotateRight(x.parent);
@@ -64,70 +64,63 @@ export default class SplayTree {
   }
 
 
-  _splay(node) {
-    var P, GP, GGP;
+  splay(node) {
+    var P, GP, GGP, l, r;
 
     while ((P = node.parent) !== null) {
-      if ((GP = P.parent) && (GGP = GP.parent)) {
-        if (GGP.left === GP) GGP.left = node;
+      GP = P.parent;
+      if (GP && GP.parent) {
+        GGP = GP.parent;
+        if (GGP.left === GP) GGP.left  = node;
         else                 GGP.right = node;
         node.parent = GGP;
       } else {
         node.parent = null;
         this._root = node;
       }
+
+      l = node.left; r = node.right;
       if (P.left === node) {
         if (GP) {
           if (GP.left === P) {
             /* zig-zig */
             GP.left = P.right;
-            GP.left.parent = GP;
-            //link_node(P->right, GP, &GP->left);
+            if (GP.left) GP.left.parent = GP;
+
             P.right = GP;
             GP.parent = P;
-            //link_node(GP, P, &P->right);
           } else {
             /* zig-zag */
-            GP.right = node.left;
-            if (GP.right) GP.right.parent = GP;
-            //link_node(node->left, GP, &GP->right);
+            GP.right = l;
+            if (l) l.parent = GP;
             node.left = GP;
-            node.left.parent = node;
-            //link_node(GP, node, &node->left);
+            GP.parent = node;
           }
         }
-        P.left = node.right;
-        if (P.left) P.left.parent = P;
-        // link_node(node->right, P, &P->left);
+        P.left = r;
+        if (r) r.parent = P;
         node.right = P;
         P.parent = node;
-        // link_node(P, node, &node->right);
       } else {
         if (GP) {
           if (GP.right === P) {
             /* zig-zig */
             GP.right = P.left;
-            GP.right.parent = GP;
-            //link_node(P->left, GP, &GP->right);
+            if (GP.right) GP.right.parent = GP;
             P.left = GP;
-            P.left.parent = P;
-            //link_node(GP, P, &P->left);
+            GP.parent = P;
           } else {
             /* zig-zag */
-            GP.left = node.right;
-            GP.left.parent = GP;
-            //link_node(node->right, GP, &GP->left);
+            GP.left = r;
+            if (r) r.parent = GP;
             node.right = GP;
-            node.right.parent = node;
-            //link_node(GP, node, &node->right);
+            GP.parent = node;
           }
         }
-        P.right = node.left;
-        P.right.parent = P;
-        // link_node(node->left, P, &P->right);
+        P.right = l;
+        if (l) l.parent = P;
         node.left = P;
-        node.left.parent = node;
-        //link_node(P, node, &node->left);
+        P.parent = node;
       }
     }
   }
