@@ -170,6 +170,11 @@ npm t
 npm run build
 ```
 
+## TODO
+
+- [ ] Add option for bubbling elements up as you retrieve them
+- [ ] Fix splaying for performance
+
 ## License
 
 The MIT License (MIT)

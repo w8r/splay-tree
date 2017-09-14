@@ -64,85 +64,106 @@ SplayTree.prototype._splay = function _splay (x) {
     var this$1 = this;
 
   while (x.parent) {
-    if (!x.parent.parent) {
-      if (x.parent.left === x) { this$1.rotateRight(x.parent); }
-      else                   { this$1.rotateLeft(x.parent); }
-    } else if (x.parent.left === x && x.parent.parent.left === x.parent) {
-      this$1.rotateRight(x.parent.parent);
-      this$1.rotateRight(x.parent);
-    } else if (x.parent.right === x && x.parent.parent.right === x.parent) {
-      this$1.rotateLeft(x.parent.parent);
-      this$1.rotateLeft(x.parent);
-    } else if (x.parent.left === x && x.parent.parent.right === x.parent) {
-      this$1.rotateRight(x.parent);
-      this$1.rotateLeft(x.parent);
+    var p = x.parent;
+    if (!p.parent) {
+      if (p.left === x) { this$1.rotateRight(p); }
+      else            { this$1.rotateLeft(p); }
+    } else if (p.left === x && p.parent.left === p) {
+      this$1.rotateRight(p.parent);
+      this$1.rotateRight(p);
+    } else if (p.right === x && p.parent.right === p) {
+      this$1.rotateLeft(p.parent);
+      this$1.rotateLeft(p);
+    } else if (p.left === x && p.parent.right === p) {
+      this$1.rotateRight(p);
+      this$1.rotateLeft(p);
     } else {
-      this$1.rotateLeft(x.parent);
-      this$1.rotateRight(x.parent);
+      this$1.rotateLeft(p);
+      this$1.rotateRight(p);
     }
   }
 };
 
 
-SplayTree.prototype.splay = function splay (node) {
+SplayTree.prototype.splay = function splay (x) {
     var this$1 = this;
 
-  var P, GP, GGP, l, r;
+  var p, gp, ggp, l, r;
 
-  while ((P = node.parent) !== null) {
-    GP = P.parent;
-    if (GP && GP.parent) {
-      GGP = GP.parent;
-      if (GGP.left === GP) { GGP.left= node; }
-      else               { GGP.right = node; }
-      node.parent = GGP;
+  while (x.parent) {
+    p = x.parent;
+    gp = p.parent;
+
+    if (gp && gp.parent) {
+      ggp = gp.parent;
+      if (ggp.left === gp) { ggp.left= x; }
+      else               { ggp.right = x; }
+      x.parent = ggp;
     } else {
-      node.parent = null;
-      this$1._root = node;
+      x.parent = null;
+      this$1._root = x;
     }
 
-    l = node.left; r = node.right;
-    if (P.left === node) {
-      if (GP) {
-        if (GP.left === P) {
-          /* zig-zig */
-          GP.left = P.right;
-          if (GP.left) { GP.left.parent = GP; }
+    l = x.left; r = x.right;
 
-          P.right = GP;
-          GP.parent = P;
-        } else {
-          /* zig-zag */
-          GP.right = l;
-          if (l) { l.parent = GP; }
-          node.left = GP;
-          GP.parent = node;
-        }
-      }
-      P.left = r;
-      if (r) { r.parent = P; }
-      node.right = P;
-      P.parent = node;
-    } else {
-      if (GP) {
-        if (GP.right === P) {
+    if (x === p.left) { // left
+      if (gp) {
+        if (gp.left === p) {
           /* zig-zig */
-          GP.right = P.left;
-          if (GP.right) { GP.right.parent = GP; }
-          P.left = GP;
-          GP.parent = P;
+          if (p.right) {
+            gp.left = p.right;
+            gp.left.parent = gp;
+          } else { gp.left = null; }
+
+          p.right = gp;
+          gp.parent = p;
         } else {
           /* zig-zag */
-          GP.left = r;
-          if (r) { r.parent = GP; }
-          node.right = GP;
-          GP.parent = node;
+          if (l) {
+            gp.right = l;
+            l.parent = gp;
+          } else { gp.right = null; }
+
+          x.left  = gp;
+          gp.parent = x;
         }
       }
-      P.right = l;
-      if (l) { l.parent = P; }
-      node.left = P;
-      P.parent = node;
+      if (r) {
+        p.left = r;
+        r.parent = p;
+      } else { p.left = null; }
+
+      x.right= p;
+      p.parent = x;
+    } else { // right
+      if (gp) {
+        if (gp.right === p) {
+          /* zig-zig */
+          if (p.left) {
+            gp.right = p.left;
+            gp.right.parent = gp;
+          } else { gp.right = null; }
+
+          p.left = gp;
+          gp.parent = p;
+        } else {
+          /* zig-zag */
+          if (r) {
+            gp.left = r;
+            r.parent = gp;
+          } else { gp.left = null; }
+
+          x.right = gp;
+          gp.parent = x;
+        }
+      }
+      if (l) {
+        p.right = l;
+        l.parent = p;
+      } else { p.right = null; }
+
+      x.left = p;
+      p.parent = x;
     }
   }
 };
@@ -203,6 +224,7 @@ SplayTree.prototype.insert = function insert (key, data) {
   this.splay(z);
   this._size++;
 };
+
 
 SplayTree.prototype.find = function find (key) {
   var z  = this._root;

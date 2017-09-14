@@ -8,7 +8,7 @@ require('google-closure-library');
 goog.require('goog.structs.AvlTree');
 
 
-const N = 1000;
+const N = 100;
 const rvalues = new Array(N).fill(0).map((n, i) => Math.floor(Math.random() * N));
 const values = new Array(N).fill(0).map((n, i) => i);
 
