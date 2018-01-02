@@ -1,5 +1,5 @@
 /**
- * splaytree v0.0.1
+ * splaytree v0.1.0
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -261,7 +261,7 @@ SplayTree.prototype.contains = function contains (key) {
 SplayTree.prototype.remove = function remove (key) {
   var z = this.find(key);
 
-  if (!z) { return; }
+  if (!z) { return false; }
 
   this.splay(z);
 
@@ -280,6 +280,31 @@ SplayTree.prototype.remove = function remove (key) {
   }
 
   this._size--;
+  return true;
+};
+
+
+SplayTree.prototype.removeNode = function removeNode (z) {
+  if (!z) { return false; }
+
+  this.splay(z);
+
+  if (!z.left) { this.replace(z, z.right); }
+  else if (!z.right) { this.replace(z, z.left); }
+  else {
+    var y = this.minNode(z.right);
+    if (y.parent !== z) {
+      this.replace(y, y.right);
+      y.right = z.right;
+      y.right.parent = y;
+    }
+    this.replace(z, y);
+    y.left = z.left;
+    y.left.parent = y;
+  }
+
+  this._size--;
+  return true;
 };
 
 

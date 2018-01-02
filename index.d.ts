@@ -13,7 +13,8 @@ export default class SplayTree<Key extends any, Value extends any> {
   constructor (comparator?: Comparator<Key>, noDuplicates?: boolean);
   size: number;
   insert(key: Key, data?: Value): Node<Key, Value>;
-  remove(key: Key): Node<Key, Value>;
+  remove(key: Key): boolean;
+  removeNode(node: Node<Key, Value>): boolean;
   find(key: Key): Node<Key, Value>;
   at(index: number): Node<Key, Value>;
   contains(key: Key): boolean;

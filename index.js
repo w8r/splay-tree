@@ -235,7 +235,7 @@ export default class SplayTree {
   remove (key) {
     var z = this.find(key);
 
-    if (!z) return;
+    if (!z) return false;
 
     this.splay(z);
 
@@ -254,6 +254,31 @@ export default class SplayTree {
     }
 
     this._size--;
+    return true;
+  }
+
+
+  removeNode(z) {
+    if (!z) return false;
+
+    this.splay(z);
+
+    if (!z.left) this.replace(z, z.right);
+    else if (!z.right) this.replace(z, z.left);
+    else {
+      var y = this.minNode(z.right);
+      if (y.parent !== z) {
+        this.replace(y, y.right);
+        y.right = z.right;
+        y.right.parent = y;
+      }
+      this.replace(z, y);
+      y.left = z.left;
+      y.left.parent = y;
+    }
+
+    this._size--;
+    return true;
   }
 
 

@@ -39,8 +39,9 @@ Or use the compiled version 'dist/splay.js'.
 ## API
 
 * `new SplayTree([comparator], [noDuplicates:Boolean])`, where `compare` is optional comparison function
-* `tree.insert(key:any, [data:any])` - Insert item
-* `tree.remove(key:any)` - Remove item
+* `tree.insert(key:any, [data:any]):Node` - Insert item
+* `tree.remove(key:any):Boolean` - Remove item
+* `tree.removeNode(Node:any)|Boolean` - Remove node
 * `tree.find(key):Node|Null` - Return node by its key
 * `tree.at(index:Number):Node|Null` - Return node by its index in sorted order of keys
 * `tree.contains(key):Boolean` - Whether a node with the given key is in the tree
