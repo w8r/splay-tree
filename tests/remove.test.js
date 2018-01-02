@@ -35,4 +35,18 @@ describe('remove', () => {
     assert.equal(tree._root.key, 1);
   });
 
+
+  it('should not break the existing pointers to nodes', () => {
+    const tree = new Tree();
+
+    const n1 = tree.insert(1);
+    const n2 = tree.insert(2);
+    const n3 = tree.insert(3);
+
+    tree.remove(2);
+
+    assert.equal(n2.key, 2);
+    assert.equal(n3.key, 3);
+  });
+
 });

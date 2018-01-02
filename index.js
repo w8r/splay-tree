@@ -197,6 +197,7 @@ export default class SplayTree {
 
     this.splay(z);
     this._size++;
+    return z;
   }
 
 

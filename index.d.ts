@@ -12,7 +12,7 @@ export type ForEachCallback<Key, Value> = (node: Node<Key, Value>, index: number
 export default class SplayTree<Key extends any, Value extends any> {
   constructor (comparator?: Comparator<Key>, noDuplicates?: boolean);
   size: number;
-  insert(key: Key, data?: Value): void;
+  insert(key: Key, data?: Value): Node<Key, Value>;
   remove(key: Key): Node<Key, Value>;
   find(key: Key): Node<Key, Value>;
   at(index: number): Node<Key, Value>;

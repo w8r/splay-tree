@@ -223,6 +223,7 @@ SplayTree.prototype.insert = function insert (key, data) {
 
   this.splay(z);
   this._size++;
+  return z;
 };
 
 
