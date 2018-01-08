@@ -1,4 +1,4 @@
-# Splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/avl) [![CircleCI](https://circleci.com/gh/w8r/splay-tree.svg?style=svg)](https://circleci.com/gh/w8r/splay-tree)
+# Splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![CircleCI](https://circleci.com/gh/w8r/splay-tree.svg?style=svg)](https://circleci.com/gh/w8r/splay-tree)
 
 [Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 500 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks agains other trees.
