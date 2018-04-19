@@ -48,6 +48,7 @@ Or use the compiled version 'dist/splay.js'.
 * `tree.forEach(function(node) {...}):Tree` In-order traversal
 * `tree.keys():Array<key>` - Returns the array of keys in order
 * `tree.values():Array<*>` - Returns the array of data fields in order
+* `tree.range(lo, high, function(node) {} [, context]):Tree` - Walks the range of keys in order. Stops, if the visitor function returns a non-zero value.
 * `tree.pop():Node` - Removes smallest node
 * `tree.min():key` - Returns min key
 * `tree.max():key` - Returns max key

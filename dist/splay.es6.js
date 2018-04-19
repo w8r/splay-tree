@@ -1,5 +1,5 @@
 /**
- * splaytree v0.1.0
+ * splaytree v0.1.1
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -381,7 +381,7 @@ class SplayTree {
 
   /**
    * @param  {forEachCallback} callback
-   * @return {AVLTree}
+   * @return {SplayTree}
    */
   forEach(callback) {
     var current = this._root;
@@ -406,6 +406,38 @@ class SplayTree {
           // subtree. Now, it's right subtree's turn
           current = current.right;
         } else done = true;
+      }
+    }
+    return this;
+  }
+
+
+  /**
+   * Walk key range from `low` to `high`. Stops if `fn` returns a value.
+   * @param  {Key}      low
+   * @param  {Key}      high
+   * @param  {Function} fn
+   * @param  {*?}       ctx
+   * @return {SplayTree}
+   */
+  range(low, high, fn, ctx) {
+    const Q = [];
+    const compare = this._compare;
+    let node = this._root, cmp;
+
+    while (Q.length !== 0 || node) {
+      if (node) {
+        Q.push(node);
+        node = node.left;
+      } else {
+        node = Q.pop();
+        cmp = compare(node.key, high);
+        if (cmp > 0) {
+          break;
+        } else if (compare(node.key, low) >= 0) {
+          if (fn.call(ctx, node)) return this; // stop if smth is returned
+        }
+        node = node.right;
       }
     }
     return this;
