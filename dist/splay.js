@@ -1,5 +1,5 @@
 /**
- * splaytree v0.1.1
+ * splaytree v0.1.2
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
