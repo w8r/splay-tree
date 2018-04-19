@@ -8,6 +8,7 @@ export type Node<Key extends any, Value extends any> = {
 };
 export type Comparator<Key> = (a: Key, b: Key) => number
 export type ForEachCallback<Key, Value> = (node: Node<Key, Value>, index: number) => void
+export type TraverseCallback<Key, Value> = (node: Node<Key, Value>) => (void | boolean)
 
 export default class SplayTree<Key extends any, Value extends any> {
   constructor (comparator?: Comparator<Key>, noDuplicates?: boolean);
@@ -21,6 +22,7 @@ export default class SplayTree<Key extends any, Value extends any> {
   isEmpty(): boolean;
   keys(): Array<Key>;
   values(): Array<Value>;
+  range(minKey:Key, maxKey:Key, visit:TraverseCallback<Key, Value>, context?:any);
   pop(): Node<Key, Value>;
   min(): Key;
   max(): Key;
