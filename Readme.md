@@ -38,7 +38,7 @@ Or use the compiled version 'dist/splay.js'.
 
 ## API
 
-* `new SplayTree([comparator], [noDuplicates:Boolean])`, where `compare` is optional comparison function
+* `new SplayTree([comparator], [noDuplicates:Boolean])`, where `comparator` is optional comparison function
 * `tree.insert(key:any, [data:any]):Node` - Insert item
 * `tree.remove(key:any):Boolean` - Remove item
 * `tree.removeNode(Node:any)|Boolean` - Remove node
@@ -56,7 +56,8 @@ Or use the compiled version 'dist/splay.js'.
 * `tree.maxNode():Node` - Returns the node with highest key
 * `tree.prev(node):Node` - Predecessor node
 * `tree.next(node):Node` - Successor node
-* `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. If `presort` is `true`, it will sort keys and values using the comparator(in-place!). You can only use it on an empty tree.
+* `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. It expects values and keys to be sorted, but if `presort` is `true`, it will sort keys and values using the comparator(in-place!). You can only use it on an empty tree.
+* `SplayTree.createTree(keys:Array<Key>, [values:Array<Value>][,comparator][,presort:Boolean][,noDuplicates:Boolean]):SplayTree` - creates and loads the tree. Equivalent of `new SplayTree(comparator, noDuplicates).load(keys, values, presort)`.
 
 **Comparator**
 

@@ -560,9 +560,7 @@ export default class SplayTree {
    * @return {SplayTree}
    */
   static createTree(keys, values, comparator, presort, noDuplicates) {
-    const tree = new SplayTree(comparator, noDuplicates);
-    tree.load(keys, values, presort);
-    return tree;
+    return new SplayTree(comparator, noDuplicates).load(keys, values, presort);
   }
 }
 

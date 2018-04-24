@@ -1,5 +1,5 @@
 /**
- * splaytree v0.1.3
+ * splaytree v0.1.4
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -592,9 +592,7 @@ prototypeAccessors.size.get = function () { return this._size; };
  * @return {SplayTree}
  */
 SplayTree.createTree = function createTree (keys, values, comparator, presort, noDuplicates) {
-  var tree = new SplayTree(comparator, noDuplicates);
-  tree.load(keys, values, presort);
-  return tree;
+  return new SplayTree(comparator, noDuplicates).load(keys, values, presort);
 };
 
 Object.defineProperties( SplayTree.prototype, prototypeAccessors );

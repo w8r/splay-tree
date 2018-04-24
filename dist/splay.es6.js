@@ -1,5 +1,5 @@
 /**
- * splaytree v0.1.3
+ * splaytree v0.1.4
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -569,9 +569,7 @@ class SplayTree {
    * @return {SplayTree}
    */
   static createTree(keys, values, comparator, presort, noDuplicates) {
-    const tree = new SplayTree(comparator, noDuplicates);
-    tree.load(keys, values, presort);
-    return tree;
+    return new SplayTree(comparator, noDuplicates).load(keys, values, presort);
   }
 }
 
