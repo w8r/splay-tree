@@ -53,10 +53,28 @@ describe('Keys and values', () => {
 
   it ('should return sorted values after bulk insert', () => {
     const t = new Tree();
-    t.load([5, -10, 0, 33, 2], ['D', 'A', 'B', 'E', 'C']);
+    t.load([5, -10, 0, 33, 2], ['D', 'A', 'B', 'E', 'C'], true);
 
     assert.deepEqual(t.keys(), [-10, 0, 2, 5, 33]);
     assert.deepEqual(t.values(), ['A', 'B', 'C', 'D', 'E']);
+  });
+
+
+  // here we are testing recursion approach
+  it ('should be able to bulk-load 10000 items', () => {
+    const t = new Tree();
+    const N = 1e4;
+
+    const keys = new Array(N);
+    for (let i = 0; i < N; i++) {
+      keys[i] = i;
+    }
+
+    //console.time('load');
+    t.load(keys, undefined);
+    //console.timeEnd('load');
+
+    assert.deepEqual(t.keys().slice(0,20), keys.slice(0, 20));
   });
 
 });

@@ -512,17 +512,20 @@ export default class SplayTree {
   }
 
   /**
-   * Bulk-load items
-   * @param  {Array<Key>}  keys
+   * Bulk-load items. Both array have to be same size
+   * @param  {Array<Key>}    keys
    * @param  {Array<Value>}  [values]
+   * @param  {Boolean}       [presort=false] Pre-sort keys and values, using
+   *                                         tree's comparator. Sorting is done
+   *                                         in-place
    * @return {AVLTree}
    */
-  load(keys = [], values = []) {
-    if (Array.isArray(keys)) {
-      for (var i = 0, len = keys.length; i < len; i++) {
-        this.insert(keys[i], values[i]);
-      }
-    }
+  load(keys = [], values = [], presort = false) {
+    if (this._size !== 0) throw new Error('bulk-load: tree is not empty');
+    const size = keys.length;
+    if (presort) sort(keys, values, 0, size - 1, this._compare);
+    this._root = loadRecursive(null, keys, values, 0, size);
+    this._size = size;
     return this;
   }
 
@@ -542,4 +545,64 @@ export default class SplayTree {
 
   isEmpty() { return this._root === null; }
   get size() { return this._size; }
+
+
+  /**
+   * Create a tree and load it with items
+   * @param  {Array<Key>}          keys
+   * @param  {Array<Value>?}        [values]
+
+   * @param  {Function?}            [comparator]
+   * @param  {Boolean?}             [presort=false] Pre-sort keys and values, using
+   *                                               tree's comparator. Sorting is done
+   *                                               in-place
+   * @param  {Boolean?}             [noDuplicates=false]   Allow duplicates
+   * @return {SplayTree}
+   */
+  static createTree(keys, values, comparator, presort, noDuplicates) {
+    const tree = new SplayTree(comparator, noDuplicates);
+    tree.load(keys, values, presort);
+    return tree;
+  }
+}
+
+
+function loadRecursive (parent, keys, values, start, end) {
+  const size = end - start;
+  if (size > 0) {
+    const middle = start + Math.floor(size / 2);
+    const key    = keys[middle];
+    const data   = values[middle];
+    const node   = { key, data, parent };
+    node.left    = loadRecursive(node, keys, values, start, middle);
+    node.right   = loadRecursive(node, keys, values, middle + 1, end);
+    return node;
+  }
+  return null;
+}
+
+
+function sort(keys, values, left, right, compare) {
+  if (left >= right) return;
+
+  const pivot = keys[(left + right) >> 1];
+  let i = left - 1;
+  let j = right + 1;
+
+  while (true) {
+    do i++; while (compare(keys[i], pivot) < 0);
+    do j--; while (compare(keys[j], pivot) > 0);
+    if (i >= j) break;
+
+    let tmp = keys[i];
+    keys[i] = keys[j];
+    keys[j] = tmp;
+
+    tmp = values[i];
+    values[i] = values[j];
+    values[j] = tmp;
+  }
+
+  sort(keys, values,  left,     j, compare);
+  sort(keys, values, j + 1, right, compare);
 }

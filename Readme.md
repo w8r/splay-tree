@@ -56,7 +56,7 @@ Or use the compiled version 'dist/splay.js'.
 * `tree.maxNode():Node` - Returns the node with highest key
 * `tree.prev(node):Node` - Predecessor node
 * `tree.next(node):Node` - Successor node
-* `tree.load(keys:Array<*>, [values:Array<*>]):Tree` - Bulk-load items
+* `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. If `presort` is `true`, it will sort keys and values using the comparator(in-place!). You can only use it on an empty tree.
 
 **Comparator**
 

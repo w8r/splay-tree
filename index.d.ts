@@ -29,10 +29,11 @@ export default class SplayTree<Key extends any, Value extends any> {
   minNode(): Node<Key, Value>;
   maxNode(): Node<Key, Value>;
   forEach(callback: ForEachCallback<Key, Value>): SplayTree<Key, Value>;
-  load(keys: Array<Key>, values?:Array<Value>): SplayTree<Key, Value>;
+  load(keys: Array<Key>, values?:Array<Value>, presort?:Boolean): SplayTree<Key, Value>;
   prev(node: Node<Key, Value>): Node<Key, Value>;
   next(node: Node<Key, Value>): Node<Key, Value>;
   isBalanced(): boolean;
   toString(): string;
   destroy(): SplayTree<Key, Value>;
+  static createTree(keys: Array<any>, values?:Array<any>, comparator?: Comparator<any>, presort?:Boolean,  noDuplicates?: boolean):SplayTree<any,any>
 }
