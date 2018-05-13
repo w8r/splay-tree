@@ -1,5 +1,5 @@
 /**
- * splaytree v2.0.0
+ * splaytree v2.0.2
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -163,10 +163,8 @@ function add (i, data, t, comparator, tree) {
 
   t = splay(i, t, comparator);
   const cmp = comparator(i, t.key);
-  if (cmp === 0) {
-    return t;
-  } else {
-
+  if (cmp === 0) return t;
+  else {
     if (cmp < 0) {
       node.left = t.left;
       node.right = t;
@@ -255,8 +253,8 @@ function printRow (root, prefix, isTail, out, printNode) {
   if (root) {
     out(`${ prefix }${ isTail ? '└── ' : '├── ' }${ printNode(root) }\n`);
     const indent = prefix + (isTail ? '    ' : '│   ');
-    if (root.left)  row(root.left,  indent, false, out, printNode);
-    if (root.right) row(root.right, indent, true,  out, printNode);
+    if (root.left)  printRow(root.left,  indent, false, out, printNode);
+    if (root.right) printRow(root.right, indent, true,  out, printNode);
   }
 }
 
@@ -344,21 +342,6 @@ class Tree {
       if (this._comparator(key, this._root.key) !== 0) return null;
     }
     return this._root;
-  }
-
-
-  update (key) {
-    let current   = this._root;
-    const compare = this._comparator;
-    while (current) {
-      const cmp = compare(key, current.key);
-      if (cmp === 0)    {
-        current.key;
-        break;
-      }
-      else if (cmp < 0) current = current.left;
-      else              current = current.right;
-    }
   }
 
 
@@ -520,7 +503,6 @@ class Tree {
     }
     return null;
   }
-
 
 
   /**
@@ -753,7 +735,6 @@ function mergeLists (l1, l2, compare = (a, b) => a - b) {
 
   return head.next;
 }
-
 
 
 function sort(keys, values, left, right, compare) {

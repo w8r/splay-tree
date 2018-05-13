@@ -1,5 +1,5 @@
 /**
- * splaytree v2.0.0
+ * splaytree v2.0.2
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -166,10 +166,8 @@
 
     t = splay(i, t, comparator);
     var cmp = comparator(i, t.key);
-    if (cmp === 0) {
-      return t;
-    } else {
-
+    if (cmp === 0) { return t; }
+    else {
       if (cmp < 0) {
         node.left = t.left;
         node.right = t;
@@ -258,8 +256,8 @@
     if (root) {
       out(("" + prefix + (isTail ? '└── ' : '├── ') + (printNode(root)) + "\n"));
       var indent = prefix + (isTail ? '    ' : '│   ');
-      if (root.left)  { row(root.left,  indent, false, out, printNode); }
-      if (root.right) { row(root.right, indent, true,  out, printNode); }
+      if (root.left)  { printRow(root.left,  indent, false, out, printNode); }
+      if (root.right) { printRow(root.right, indent, true,  out, printNode); }
     }
   }
 
@@ -349,21 +347,6 @@
       if (this._comparator(key, this._root.key) !== 0) { return null; }
     }
     return this._root;
-  };
-
-
-  Tree.prototype.update = function update (key) {
-    var current = this._root;
-    var compare = this._comparator;
-    while (current) {
-      var cmp = compare(key, current.key);
-      if (cmp === 0)  {
-        current.key;
-        break;
-      }
-      else if (cmp < 0) { current = current.left; }
-      else            { current = current.right; }
-    }
   };
 
 
@@ -539,7 +522,6 @@
     }
     return null;
   };
-
 
 
   /**
@@ -783,7 +765,6 @@
 
     return head.next;
   }
-
 
 
   function sort(keys, values, left, right, compare) {

@@ -1,6 +1,6 @@
 {
   "name": "splaytree",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
@@ -19,7 +19,7 @@
   },
   "scripts": {
     "prebuild": "npm run lint",
-    "lint": "eslint src",
+    "lint": "eslint index.js",
     "build": "rollup -c build/rollup.config.umd.js && rollup -c build/rollup.config.es6.js && npm run types",
     "types": "tsc index.d.ts tests/types.ts",
     "pretest": "rollup -c build/rollup.config.tests.js",

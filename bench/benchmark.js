@@ -124,8 +124,8 @@ new Benchmark.Suite(`Bulk-add (x${K}) to ${L}`, options)
 const G = 10000;
 const P = 0.1;
 const F = Math.round(G * P);
-const data = generateRValues(G);
-const toUpdate  = generateRValues(F, 0, G).map((id) => data[id]);
+const data = generateRValues(G).sort(comparator);
+const toUpdate = generateRValues(F, 0, G).map((id) => data[id]).sort(comparator);
 
 
 new Benchmark.Suite(`Bulk-remove-insert (${P*100}%) of ${G}`, options)
