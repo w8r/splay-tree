@@ -1,6 +1,6 @@
 import config from './rollup.config';
 
-config.format = 'es';
-config.dest   = 'dist/splay.es6.js';
+config.output.format = 'es';
+config.output.file   = 'dist/splay.es6.js';
 
 export default config;

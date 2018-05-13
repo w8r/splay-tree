@@ -20,7 +20,7 @@ function main() {
   t.remove(0)
   t.size   // 4
 
-  t.forEach((node, index) => {
+  t.forEach((node) => {
     const balanceFactor: number = node.balanceFactor
     const data: number = node.data
     const key: number = node.key
@@ -32,7 +32,7 @@ function main() {
 
 function customComparator() {
   const noDuplicates = true
-  const t = new Tree<number, number>((a, b) => b - a, noDuplicates)
+  const t = new Tree<number, number>((a, b) => b - a)
   t.insert(5)
   t.insert(-10)
   t.insert(0)

@@ -16,9 +16,9 @@ function shuffle(array) {
 }
 
 
-describe ('custom comparator', () => {
+describe('custom comparator', () => {
 
-  it('should function correctly given a non-reverse customCompare', () => {
+  it ('should function correctly given a non-reverse customCompare', () => {
     const tree = new Tree((a, b) => b - a);
     tree.insert(2);
     tree.insert(1);

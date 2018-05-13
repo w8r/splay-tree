@@ -3,7 +3,7 @@ import { assert }       from 'chai';
 
 import Tree from '../index';
 
-describe('find', () => {
+describe ('find', () => {
 
   it('should return key as the result of search', () => {
     const tree = new Tree();
@@ -18,4 +18,4 @@ describe('find', () => {
     assert.equal(tree.find(3).data, 6);
     assert.isNull(tree.find(8));
   });
-})
+});

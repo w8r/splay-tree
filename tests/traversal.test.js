@@ -12,16 +12,16 @@ describe('traversal check', () => {
     tree.insert(0);
     tree.insert(2);
 
-    tree.forEach((n, i) => assert.equal(n.key, i));
+    let i = 0;
+    tree.forEach((n) => assert.equal(n.key, i++));
   });
 
   it('should find predecessor for the node', () => {
     const tree = new Tree();
-    const keys = [];
     for (let i = 0; i < 10; i++) tree.insert(i);
 
     for (let i = 1; i < 10; i++) {
-      assert.strictEqual(tree.prev(tree.find(i)), tree.find(i - 1));
+      assert.strictEqual(tree.prev(tree.find(i)).key, tree.find(i - 1).key);
     }
   });
 
@@ -54,6 +54,27 @@ describe('traversal check', () => {
     tree.remove(max.key);
     max = tree.maxNode();
     assert.isNull(tree.next(max));
+  });
+
+
+  it ('should reach end in walking', () => {
+    const tree = new Tree();
+    const keys = [
+      49153, 49154, 49156, 49157, 49158, 49159, 49160, 49161,
+      49163, 49165, 49191, 49199, 49201, 49202, 49203, 49204,
+      49206, 49207, 49208, 49209, 49210, 49212
+    ];
+
+    keys.forEach((k) => tree.insert(k));
+
+    let min = tree.minNode();
+
+    keys.forEach((key, i) => {
+      assert.equal(min.key, key);
+      min = tree.next(min);
+    });
+
+    assert.isNull(min);
   });
 
   it ('should find successor and predecessor for 2-nodes tree', () => {
