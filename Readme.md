@@ -50,6 +50,7 @@ Or use the compiled version 'dist/splay.js'.
 * `tree.remove(key:any):Boolean` - Remove item
 * `tree.removeNode(Node:any)|Boolean` - Remove node
 * `tree.find(key):Node|Null` - Return node by its key
+* `tree.findStatic(key):Node|Null` - Return node by its key (doesn't re-balance the tree)
 * `tree.at(index:Number):Node|Null` - Return node by its index in sorted order of keys
 * `tree.contains(key):Boolean` - Whether a node with the given key is in the tree
 * `tree.forEach(function(node) {...}):Tree` In-order traversal
