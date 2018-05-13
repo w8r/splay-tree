@@ -1,5 +1,5 @@
 /**
- * splaytree v0.1.4
+ * splaytree v2.0.0
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -8,636 +8,809 @@
  */
 
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.SplayTree = factory());
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (global.SplayTree = factory());
 }(this, (function () { 'use strict';
 
-function DEFAULT_COMPARE (a, b) { return a > b ? 1 : a < b ? -1 : 0; }
+  /* follows "An implementation of top-down splaying"
+   * by D. Sleator <sleator@cs.cmu.edu> March 1992
+   */
 
-var SplayTree = function SplayTree(compare, noDuplicates) {
-  if ( compare === void 0 ) compare = DEFAULT_COMPARE;
-  if ( noDuplicates === void 0 ) noDuplicates = false;
-
-  this._compare = compare;
-  this._root = null;
-  this._size = 0;
-  this._noDuplicates = !!noDuplicates;
-};
-
-var prototypeAccessors = { size: {} };
+  /**
+   * @typedef {*} Key
+   */
 
 
-SplayTree.prototype.rotateLeft = function rotateLeft (x) {
-  var y = x.right;
-  if (y) {
-    x.right = y.left;
-    if (y.left) { y.left.parent = x; }
-    y.parent = x.parent;
-  }
-
-  if (!x.parent)              { this._root = y; }
-  else if (x === x.parent.left) { x.parent.left = y; }
-  else                        { x.parent.right = y; }
-  if (y) { y.left = x; }
-  x.parent = y;
-};
+  /**
+   * @typedef {*} Value
+   */
 
 
-SplayTree.prototype.rotateRight = function rotateRight (x) {
-  var y = x.left;
-  if (y) {
-    x.left = y.right;
-    if (y.right) { y.right.parent = x; }
-    y.parent = x.parent;
-  }
-
-  if (!x.parent)             { this._root = y; }
-  else if(x === x.parent.left) { x.parent.left = y; }
-  else                       { x.parent.right = y; }
-  if (y) { y.right = x; }
-  x.parent = y;
-};
+  /**
+   * @typedef {function(node:Node):void} Visitor
+   */
 
 
-SplayTree.prototype._splay = function _splay (x) {
-    var this$1 = this;
-
-  while (x.parent) {
-    var p = x.parent;
-    if (!p.parent) {
-      if (p.left === x) { this$1.rotateRight(p); }
-      else            { this$1.rotateLeft(p); }
-    } else if (p.left === x && p.parent.left === p) {
-      this$1.rotateRight(p.parent);
-      this$1.rotateRight(p);
-    } else if (p.right === x && p.parent.right === p) {
-      this$1.rotateLeft(p.parent);
-      this$1.rotateLeft(p);
-    } else if (p.left === x && p.parent.right === p) {
-      this$1.rotateRight(p);
-      this$1.rotateLeft(p);
-    } else {
-      this$1.rotateLeft(p);
-      this$1.rotateRight(p);
-    }
-  }
-};
+  /**
+   * @typedef {function(a:Key, b:Key):number} Comparator
+   */
 
 
-SplayTree.prototype.splay = function splay (x) {
-    var this$1 = this;
+  /**
+   * @param {function(node:Node):string} NodePrinter
+   */
 
-  var p, gp, ggp, l, r;
 
-  while (x.parent) {
-    p = x.parent;
-    gp = p.parent;
+  /**
+   * @typedef {Object}  Node
+   * @property {Key}    Key
+   * @property {Value=} data
+   * @property {Node}   left
+   * @property {Node}   right
+   */
 
-    if (gp && gp.parent) {
-      ggp = gp.parent;
-      if (ggp.left === gp) { ggp.left= x; }
-      else               { ggp.right = x; }
-      x.parent = ggp;
-    } else {
-      x.parent = null;
-      this$1._root = x;
-    }
+  var Node = function Node (key, data) {
+    this.key  = key;
+    this.data = data;
+    this.left = null;
+    this.right= null;
+  };
 
-    l = x.left; r = x.right;
+  function DEFAULT_COMPARE (a, b) { return a > b ? 1 : a < b ? -1 : 0; }
 
-    if (x === p.left) { // left
-      if (gp) {
-        if (gp.left === p) {
-          /* zig-zig */
-          if (p.right) {
-            gp.left = p.right;
-            gp.left.parent = gp;
-          } else { gp.left = null; }
 
-          p.right = gp;
-          gp.parent = p;
-        } else {
-          /* zig-zag */
-          if (l) {
-            gp.right = l;
-            l.parent = gp;
-          } else { gp.right = null; }
+  /**
+   * Simple top down splay, not requiring i to be in the tree t.
+   * @param {Key} i
+   * @param {Node?} t
+   * @param {Comparator} comparator
+   */
+  function splay (i, t, comparator) {
+    if (t === null) { return t; }
+    var l, r, y;
+    var N = new Node();
+    l = r = N;
 
-          x.left  = gp;
-          gp.parent = x;
+    while (true) {
+      var cmp = comparator(i, t.key);
+      //if (i < t.key) {
+      if (cmp < 0) {
+        if (t.left === null) { break; }
+        //if (i < t.left.key) {
+        if (comparator(i, t.left.key) < 0) {
+          y = t.left;                           /* rotate right */
+          t.left = y.right;
+          y.right = t;
+          t = y;
+          if (t.left === null) { break; }
         }
-      }
-      if (r) {
-        p.left = r;
-        r.parent = p;
-      } else { p.left = null; }
-
-      x.right= p;
-      p.parent = x;
-    } else { // right
-      if (gp) {
-        if (gp.right === p) {
-          /* zig-zig */
-          if (p.left) {
-            gp.right = p.left;
-            gp.right.parent = gp;
-          } else { gp.right = null; }
-
-          p.left = gp;
-          gp.parent = p;
-        } else {
-          /* zig-zag */
-          if (r) {
-            gp.left = r;
-            r.parent = gp;
-          } else { gp.left = null; }
-
-          x.right = gp;
-          gp.parent = x;
+        r.left = t;                               /* link right */
+        r = t;
+        t = t.left;
+      //} else if (i > t.key) {
+      } else if (cmp > 0) {
+        if (t.right === null) { break; }
+        //if (i > t.right.key) {
+        if (comparator(i, t.right.key) > 0) {
+          y = t.right;                          /* rotate left */
+          t.right = y.left;
+          y.left = t;
+          t = y;
+          if (t.right === null) { break; }
         }
-      }
-      if (l) {
-        p.right = l;
-        l.parent = p;
-      } else { p.right = null; }
-
-      x.left = p;
-      p.parent = x;
-    }
-  }
-};
-
-
-SplayTree.prototype.replace = function replace (u, v) {
-  if (!u.parent) { this._root = v; }
-  else if (u === u.parent.left) { u.parent.left = v; }
-  else { u.parent.right = v; }
-  if (v) { v.parent = u.parent; }
-};
-
-
-SplayTree.prototype.minNode = function minNode (u) {
-    if ( u === void 0 ) u = this._root;
-
-  if (u) { while (u.left) { u = u.left; } }
-  return u;
-};
-
-
-SplayTree.prototype.maxNode = function maxNode (u) {
-    if ( u === void 0 ) u = this._root;
-
-  if (u) { while (u.right) { u = u.right; } }
-  return u;
-};
-
-
-SplayTree.prototype.insert = function insert (key, data) {
-  var z = this._root;
-  var p = null;
-  var comp = this._compare;
-  var cmp;
-
-  if (this._noDuplicates) {
-    while (z) {
-      p = z;
-      cmp = comp(z.key, key);
-      if (cmp === 0) { return; }
-      else if (comp(z.key, key) < 0) { z = z.right; }
-      else { z = z.left; }
-    }
-  } else {
-    while (z) {
-      p = z;
-      if (comp(z.key, key) < 0) { z = z.right; }
-      else { z = z.left; }
-    }
-  }
-
-  z = { key: key, data: data, left: null, right: null, parent: p };
-
-  if (!p)                        { this._root = z; }
-  else if (comp(p.key, z.key) < 0) { p.right = z; }
-  else                           { p.left= z; }
-
-  this.splay(z);
-  this._size++;
-  return z;
-};
-
-
-SplayTree.prototype.find = function find (key) {
-  var z  = this._root;
-  var comp = this._compare;
-  while (z) {
-    var cmp = comp(z.key, key);
-    if    (cmp < 0) { z = z.right; }
-    else if (cmp > 0) { z = z.left; }
-    else            { return z; }
-  }
-  return null;
-};
-
-/**
- * Whether the tree contains a node with the given key
- * @param{Key} key
- * @return {boolean} true/false
- */
-SplayTree.prototype.contains = function contains (key) {
-  var node     = this._root;
-  var comparator = this._compare;
-  while (node){
-    var cmp = comparator(key, node.key);
-    if    (cmp === 0) { return true; }
-    else if (cmp < 0) { node = node.left; }
-    else              { node = node.right; }
-  }
-
-  return false;
-};
-
-
-SplayTree.prototype.remove = function remove (key) {
-  var z = this.find(key);
-
-  if (!z) { return false; }
-
-  this.splay(z);
-
-  if (!z.left) { this.replace(z, z.right); }
-  else if (!z.right) { this.replace(z, z.left); }
-  else {
-    var y = this.minNode(z.right);
-    if (y.parent !== z) {
-      this.replace(y, y.right);
-      y.right = z.right;
-      y.right.parent = y;
-    }
-    this.replace(z, y);
-    y.left = z.left;
-    y.left.parent = y;
-  }
-
-  this._size--;
-  return true;
-};
-
-
-SplayTree.prototype.removeNode = function removeNode (z) {
-  if (!z) { return false; }
-
-  this.splay(z);
-
-  if (!z.left) { this.replace(z, z.right); }
-  else if (!z.right) { this.replace(z, z.left); }
-  else {
-    var y = this.minNode(z.right);
-    if (y.parent !== z) {
-      this.replace(y, y.right);
-      y.right = z.right;
-      y.right.parent = y;
-    }
-    this.replace(z, y);
-    y.left = z.left;
-    y.left.parent = y;
-  }
-
-  this._size--;
-  return true;
-};
-
-
-SplayTree.prototype.erase = function erase (key) {
-  var z = this.find(key);
-  if (!z) { return; }
-
-  this.splay(z);
-
-  var s = z.left;
-  var t = z.right;
-
-  var sMax = null;
-  if (s) {
-    s.parent = null;
-    sMax = this.maxNode(s);
-    this.splay(sMax);
-    this._root = sMax;
-  }
-  if (t) {
-    if (s) { sMax.right = t; }
-    else { this._root = t; }
-    t.parent = sMax;
-  }
-
-  this._size--;
-};
-
-/**
- * Removes and returns the node with smallest key
- * @return {?Node}
- */
-SplayTree.prototype.pop = function pop () {
-  var node = this._root, returnValue = null;
-  if (node) {
-    while (node.left) { node = node.left; }
-    returnValue = { key: node.key, data: node.data };
-    this.remove(node.key);
-  }
-  return returnValue;
-};
-
-
-/* eslint-disable class-methods-use-this */
-
-/**
- * Successor node
- * @param{Node} node
- * @return {?Node}
- */
-SplayTree.prototype.next = function next (node) {
-  var successor = node;
-  if (successor) {
-    if (successor.right) {
-      successor = successor.right;
-      while (successor && successor.left) { successor = successor.left; }
-    } else {
-      successor = node.parent;
-      while (successor && successor.right === node) {
-        node = successor; successor = successor.parent;
-      }
-    }
-  }
-  return successor;
-};
-
-
-/**
- * Predecessor node
- * @param{Node} node
- * @return {?Node}
- */
-SplayTree.prototype.prev = function prev (node) {
-  var predecessor = node;
-  if (predecessor) {
-    if (predecessor.left) {
-      predecessor = predecessor.left;
-      while (predecessor && predecessor.right) { predecessor = predecessor.right; }
-    } else {
-      predecessor = node.parent;
-      while (predecessor && predecessor.left === node) {
-        node = predecessor;
-        predecessor = predecessor.parent;
-      }
-    }
-  }
-  return predecessor;
-};
-/* eslint-enable class-methods-use-this */
-
-
-/**
- * @param{forEachCallback} callback
- * @return {SplayTree}
- */
-SplayTree.prototype.forEach = function forEach (callback) {
-  var current = this._root;
-  var s = [], done = false, i = 0;
-
-  while (!done) {
-    // Reach the left most Node of the current Node
-    if (current) {
-      // Place pointer to a tree node on the stack
-      // before traversing the node's left subtree
-      s.push(current);
-      current = current.left;
-    } else {
-      // BackTrack from the empty subtree and visit the Node
-      // at the top of the stack; however, if the stack is
-      // empty you are done
-      if (s.length > 0) {
-        current = s.pop();
-        callback(current, i++);
-
-        // We have visited the node and its left
-        // subtree. Now, it's right subtree's turn
-        current = current.right;
-      } else { done = true; }
-    }
-  }
-  return this;
-};
-
-
-/**
- * Walk key range from `low` to `high`. Stops if `fn` returns a value.
- * @param{Key}    low
- * @param{Key}    high
- * @param{Function} fn
- * @param{*?}     ctx
- * @return {SplayTree}
- */
-SplayTree.prototype.range = function range (low, high, fn, ctx) {
-    var this$1 = this;
-
-  var Q = [];
-  var compare = this._compare;
-  var node = this._root, cmp;
-
-  while (Q.length !== 0 || node) {
-    if (node) {
-      Q.push(node);
-      node = node.left;
-    } else {
-      node = Q.pop();
-      cmp = compare(node.key, high);
-      if (cmp > 0) {
+        l.right = t;                              /* link left */
+        l = t;
+        t = t.right;
+      } else {
         break;
-      } else if (compare(node.key, low) >= 0) {
-        if (fn.call(ctx, node)) { return this$1; } // stop if smth is returned
       }
-      node = node.right;
     }
+    /* assemble */
+    l.right = t.left;
+    r.left = t.right;
+    t.left = N.right;
+    t.right = N.left;
+    return t;
   }
-  return this;
-};
 
-/**
- * Returns all keys in order
- * @return {Array<Key>}
- */
-SplayTree.prototype.keys = function keys () {
-  var current = this._root;
-  var s = [], r = [], done = false;
 
-  while (!done) {
-    if (current) {
-      s.push(current);
-      current = current.left;
-    } else {
-      if (s.length > 0) {
-        current = s.pop();
-        r.push(current.key);
-        current = current.right;
-      } else { done = true; }
+  /**
+   * @param  {Key}        i
+   * @param  {Value}      data
+   * @param  {Comparator} comparator
+   * @param  {Tree}       tree
+   * @return {Node}      root
+   */
+  function insert (i, data, t, comparator, tree) {
+    var node = new Node(i, data);
+
+    tree._size++;
+
+    if (t === null) {
+      node.left = node.right = null;
+      return node;
     }
-  }
-  return r;
-};
 
-
-/**
- * Returns `data` fields of all nodes in order.
- * @return {Array<Value>}
- */
-SplayTree.prototype.values = function values () {
-  var current = this._root;
-  var s = [], r = [], done = false;
-
-  while (!done) {
-    if (current) {
-      s.push(current);
-      current = current.left;
-    } else {
-      if (s.length > 0) {
-        current = s.pop();
-        r.push(current.data);
-        current = current.right;
-      } else { done = true; }
+    t = splay(i, t, comparator);
+    var cmp = comparator(i, t.key);
+    if (cmp < 0) {
+      node.left = t.left;
+      node.right = t;
+      t.left = null;
+    } else if (cmp >= 0) {
+      node.right = t.right;
+      node.left = t;
+      t.right = null;
     }
-  }
-  return r;
-};
-
-
-/**
- * Returns node at given index
- * @param{number} index
- * @return {?Node}
- */
-SplayTree.prototype.at = function at (index) {
-  // removed after a consideration, more misleading than useful
-  // index = index % this.size;
-  // if (index < 0) index = this.size - index;
-
-  var current = this._root;
-  var s = [], done = false, i = 0;
-
-  while (!done) {
-    if (current) {
-      s.push(current);
-      current = current.left;
-    } else {
-      if (s.length > 0) {
-        current = s.pop();
-        if (i === index) { return current; }
-        i++;
-        current = current.right;
-      } else { done = true; }
-    }
-  }
-  return null;
-};
-
-/**
- * Bulk-load items. Both array have to be same size
- * @param{Array<Key>}  keys
- * @param{Array<Value>}[values]
- * @param{Boolean}     [presort=false] Pre-sort keys and values, using
- *                                       tree's comparator. Sorting is done
- *                                       in-place
- * @return {AVLTree}
- */
-SplayTree.prototype.load = function load (keys, values, presort) {
-    if ( keys === void 0 ) keys = [];
-    if ( values === void 0 ) values = [];
-    if ( presort === void 0 ) presort = false;
-
-  if (this._size !== 0) { throw new Error('bulk-load: tree is not empty'); }
-  var size = keys.length;
-  if (presort) { sort(keys, values, 0, size - 1, this._compare); }
-  this._root = loadRecursive(null, keys, values, 0, size);
-  this._size = size;
-  return this;
-};
-
-
-SplayTree.prototype.min = function min () {
-  var node = this.minNode(this._root);
-  if (node) { return node.key; }
-  else    { return null; }
-};
-
-
-SplayTree.prototype.max = function max () {
-  var node = this.maxNode(this._root);
-  if (node) { return node.key; }
-  else    { return null; }
-};
-
-SplayTree.prototype.isEmpty = function isEmpty () { return this._root === null; };
-prototypeAccessors.size.get = function () { return this._size; };
-
-
-/**
- * Create a tree and load it with items
- * @param{Array<Key>}        keys
- * @param{Array<Value>?}      [values]
-
- * @param{Function?}          [comparator]
- * @param{Boolean?}           [presort=false] Pre-sort keys and values, using
- *                                             tree's comparator. Sorting is done
- *                                             in-place
- * @param{Boolean?}           [noDuplicates=false] Allow duplicates
- * @return {SplayTree}
- */
-SplayTree.createTree = function createTree (keys, values, comparator, presort, noDuplicates) {
-  return new SplayTree(comparator, noDuplicates).load(keys, values, presort);
-};
-
-Object.defineProperties( SplayTree.prototype, prototypeAccessors );
-
-function loadRecursive (parent, keys, values, start, end) {
-  var size = end - start;
-  if (size > 0) {
-    var middle = start + Math.floor(size / 2);
-    var key    = keys[middle];
-    var data   = values[middle];
-    var node   = { key: key, data: data, parent: parent };
-    node.left    = loadRecursive(node, keys, values, start, middle);
-    node.right   = loadRecursive(node, keys, values, middle + 1, end);
     return node;
   }
-  return null;
-}
 
 
-function sort(keys, values, left, right, compare) {
-  if (left >= right) { return; }
+  /**
+   * Insert i into the tree t, unless it's already there.
+   * @param  {Key}        i
+   * @param  {Value}      data
+   * @param  {Comparator} comparator
+   * @param  {Tree}       tree
+   * @return {Node}       root
+   */
+  function add (i, data, t, comparator, tree) {
+    var node = new Node(i, data);
 
-  var pivot = keys[(left + right) >> 1];
-  var i = left - 1;
-  var j = right + 1;
+    if (t === null) {
+      node.left = node.right = null;
+      tree._size++;
+      return node;
+    }
 
-  while (true) {
-    do { i++; } while (compare(keys[i], pivot) < 0);
-    do { j--; } while (compare(keys[j], pivot) > 0);
-    if (i >= j) { break; }
+    t = splay(i, t, comparator);
+    var cmp = comparator(i, t.key);
+    if (cmp === 0) {
+      return t;
+    } else {
 
-    var tmp = keys[i];
-    keys[i] = keys[j];
-    keys[j] = tmp;
-
-    tmp = values[i];
-    values[i] = values[j];
-    values[j] = tmp;
+      if (cmp < 0) {
+        node.left = t.left;
+        node.right = t;
+        t.left = null;
+      } else if (cmp > 0) {
+        node.right = t.right;
+        node.left = t;
+        t.right = null;
+      }
+      tree._size++;
+      return node;
+    }
   }
 
-  sort(keys, values,  left,     j, compare);
-  sort(keys, values, j + 1, right, compare);
-}
 
-return SplayTree;
+  /**
+   * Deletes i from the tree if it's there
+   * @param {Key}        i
+   * @param {Tree}       tree
+   * @param {Comparator} comparator
+   * @param {Tree}       tree
+   * @return {Node}      new root
+   */
+  function remove (i, t, comparator, tree) {
+    var x;
+    if (t === null) { return null; }
+    t = splay(i, t, comparator);
+    if (i === t.key) {               /* found it */
+      if (t.left === null) {
+        x = t.right;
+      } else {
+        x = splay(i, t.left, comparator);
+        x.right = t.right;
+      }
+      tree._size--;
+      return x;
+    }
+    return t;                         /* It wasn't there */
+  }
+
+
+  function split (key, v, comparator) {
+    var left, right;
+    if (v === null) {
+      left = right = null;
+    } else {
+      v = splay(key, v, comparator);
+
+      var cmp = comparator(v.key, key);
+      if (cmp === 0) {
+        left  = v.left;
+        right = v.right;
+      } else if (cmp < 0) {
+        right   = v.right;
+        v.right = null;
+        left    = v;
+      } else {
+        left   = v.left;
+        v.left = null;
+        right  = v;
+      }
+    }
+    return { left: left, right: right };
+  }
+
+
+  function merge (left, right, comparator) {
+    if (right === null) { return left; }
+    if (left  === null) { return right; }
+
+    right = splay(left.key, right, comparator);
+    right.left = left;
+    return right;
+  }
+
+
+  /**
+   * Prints level of the tree
+   * @param  {Node}                        root
+   * @param  {String}                      prefix
+   * @param  {Boolean}                     isTail
+   * @param  {Array<string>}               out
+   * @param  {Function(node:Node):String}  printNode
+   */
+  function printRow (root, prefix, isTail, out, printNode) {
+    if (root) {
+      out(("" + prefix + (isTail ? '└── ' : '├── ') + (printNode(root)) + "\n"));
+      var indent = prefix + (isTail ? '    ' : '│   ');
+      if (root.left)  { row(root.left,  indent, false, out, printNode); }
+      if (root.right) { row(root.right, indent, true,  out, printNode); }
+    }
+  }
+
+
+  var Tree = function Tree (comparator) {
+    if ( comparator === void 0 ) comparator = DEFAULT_COMPARE;
+
+    this._comparator = comparator;
+    this._root = null;
+    this._size = 0;
+  };
+
+  var prototypeAccessors = { size: { configurable: true } };
+
+
+  /**
+   * Inserts a key, allows duplicates
+   * @param{Key}  key
+   * @param{Value=} data
+   * @return {Node|null}
+   */
+  Tree.prototype.insert = function insert$1 (key, data) {
+    return this._root = insert(key, data, this._root, this._comparator, this);
+  };
+
+
+  /**
+   * Adds a key, if it is not present in the tree
+   * @param{Key}  key
+   * @param{Value=} data
+   * @return {Node|null}
+   */
+  Tree.prototype.add = function add$1 (key, data) {
+    return this._root = add(key, data, this._root, this._comparator, this);
+  };
+
+
+  /**
+   * @param{Key} key
+   * @return {Node|null}
+   */
+  Tree.prototype.remove = function remove$1 (key) {
+    this._root = remove(key, this._root, this._comparator, this);
+  };
+
+
+  /**
+   * Removes and returns the node with smallest key
+   * @return {?Node}
+   */
+  Tree.prototype.pop = function pop () {
+    var node = this._root;
+    if (node) {
+      while (node.left) { node = node.left; }
+      this._root = splay(node.key,this._root, this._comparator);
+      this._root = remove(node.key, this._root, this._comparator, this);
+      return { key: node.key, data: node.data };
+    }
+    return null;
+  };
+
+
+  /**
+   * @param{Key} key
+   * @return {Node|null}
+   */
+  Tree.prototype.findStatic = function findStatic (key) {
+    var current = this._root;
+    var compare = this._comparator;
+    while (current) {
+      var cmp = compare(key, current.key);
+      if (cmp === 0)  { return current; }
+      else if (cmp < 0) { current = current.left; }
+      else            { current = current.right; }
+    }
+    return null;
+  };
+
+
+  /**
+   * @param{Key} key
+   * @return {Node|null}
+   */
+  Tree.prototype.find = function find (key) {
+    if (this._root) {
+      this._root = splay(key, this._root, this._comparator);
+      if (this._comparator(key, this._root.key) !== 0) { return null; }
+    }
+    return this._root;
+  };
+
+
+  Tree.prototype.update = function update (key) {
+    var current = this._root;
+    var compare = this._comparator;
+    while (current) {
+      var cmp = compare(key, current.key);
+      if (cmp === 0)  {
+        current.key;
+        break;
+      }
+      else if (cmp < 0) { current = current.left; }
+      else            { current = current.right; }
+    }
+  };
+
+
+  /**
+   * @param{Key} key
+   * @return {Boolean}
+   */
+  Tree.prototype.contains = function contains (key) {
+    var current = this._root;
+    var compare = this._comparator;
+    while (current) {
+      var cmp = compare(key, current.key);
+      if (cmp === 0)  { return true; }
+      else if (cmp < 0) { current = current.left; }
+      else            { current = current.right; }
+    }
+    return false;
+  };
+
+
+  /**
+   * @param{Visitor} visitor
+   * @param{*=}    ctx
+   * @return {SplayTree}
+   */
+  Tree.prototype.forEach = function forEach (visitor, ctx) {
+    var current = this._root;
+    var Q = [];/* Initialize stack s */
+    var done = false;
+
+    while (!done) {
+      if (current !==null) {
+        Q.push(current);
+        current = current.left;
+      } else {
+        if (Q.length !== 0) {
+          current = Q.pop();
+          visitor.call(ctx, current);
+
+          current = current.right;
+        } else { done = true; }
+      }
+    }
+    return this;
+  };
+
+
+  /**
+   * Walk key range from `low` to `high`. Stops if `fn` returns a value.
+   * @param{Key}    low
+   * @param{Key}    high
+   * @param{Function} fn
+   * @param{*?}     ctx
+   * @return {SplayTree}
+   */
+  Tree.prototype.range = function range (low, high, fn, ctx) {
+      var this$1 = this;
+
+    var Q = [];
+    var compare = this._comparator;
+    var node = this._root, cmp;
+
+    while (Q.length !== 0 || node) {
+      if (node) {
+        Q.push(node);
+        node = node.left;
+      } else {
+        node = Q.pop();
+        cmp = compare(node.key, high);
+        if (cmp > 0) {
+          break;
+        } else if (compare(node.key, low) >= 0) {
+          if (fn.call(ctx, node)) { return this$1; } // stop if smth is returned
+        }
+        node = node.right;
+      }
+    }
+    return this;
+  };
+
+
+  /**
+   * Returns array of keys
+   * @return {Array<Key>}
+   */
+  Tree.prototype.keys = function keys () {
+    var keys = [];
+    this.forEach(function (ref) {
+        var key = ref.key;
+
+        return keys.push(key);
+      });
+    return keys;
+  };
+
+
+  /**
+   * Returns array of all the data in the nodes
+   * @return {Array<Value>}
+   */
+  Tree.prototype.values = function values () {
+    var values = [];
+    this.forEach(function (ref) {
+        var data = ref.data;
+
+        return values.push(data);
+      });
+    return values;
+  };
+
+
+  /**
+   * @return {Key|null}
+   */
+  Tree.prototype.min = function min () {
+    if (this._root) { return this.minNode(this._root).key; }
+    return null;
+  };
+
+
+  /**
+   * @return {Key|null}
+   */
+  Tree.prototype.max = function max () {
+    if (this._root) { return this.maxNode(this._root).key; }
+    return null;
+  };
+
+
+  /**
+   * @return {Node|null}
+   */
+  Tree.prototype.minNode = function minNode (t) {
+      if ( t === void 0 ) t = this._root;
+
+    if (t) { while (t.left) { t = t.left; } }
+    return t;
+  };
+
+
+  /**
+   * @return {Node|null}
+   */
+  Tree.prototype.maxNode = function maxNode (t) {
+      if ( t === void 0 ) t = this._root;
+
+    if (t) { while (t.right) { t = t.right; } }
+    return t;
+  };
+
+
+  /**
+   * Returns node at given index
+   * @param{number} index
+   * @return {?Node}
+   */
+  Tree.prototype.at = function at (index) {
+    var current = this._root, done = false, i = 0;
+    var Q = [];
+
+    while (!done) {
+      if (current) {
+        Q.push(current);
+        current = current.left;
+      } else {
+        if (Q.length > 0) {
+          current = Q.pop();
+          if (i === index) { return current; }
+          i++;
+          current = current.right;
+        } else { done = true; }
+      }
+    }
+    return null;
+  };
+
+
+
+  /**
+   * @param{Node} d
+   * @return {Node|null}
+   */
+  Tree.prototype.next = function next (d) {
+    var root = this._root;
+    var successor = null;
+
+    if (d.right) {
+      successor = d.right;
+      while (successor.left) { successor = successor.left; }
+      return successor;
+    }
+
+    var comparator = this._comparator;
+    while (root) {
+      var cmp = comparator(d.key, root.key);
+      if (cmp === 0) { break; }
+      else if (cmp < 0) {
+        successor = root;
+        root = root.left;
+      } else { root = root.right; }
+    }
+
+    return successor;
+  };
+
+
+  /**
+   * @param{Node} d
+   * @return {Node|null}
+   */
+  Tree.prototype.prev = function prev (d) {
+    var root = this._root;
+    var predecessor = null;
+
+    if (d.left !== null) {
+      predecessor = d.left;
+      while (predecessor.right) { predecessor = predecessor.right; }
+      return predecessor;
+    }
+
+    var comparator = this._comparator;
+    while (root) {
+      var cmp = comparator(d.key, root.key);
+      if (cmp === 0) { break; }
+      else if (cmp < 0) { root = root.left; }
+      else {
+        predecessor = root;
+        root = root.right;
+      }
+    }
+    return predecessor;
+  };
+
+
+  /**
+   * @return {SplayTree}
+   */
+  Tree.prototype.clear = function clear () {
+    this._root = null;
+    this._size = 0;
+    return this;
+  };
+
+
+  /**
+   * @return {NodeList}
+   */
+  Tree.prototype.toList = function toList$1 () {
+    return toList(this._root);
+  };
+
+
+  /**
+   * Bulk-load items. Both array have to be same size
+   * @param{Array<Key>}  keys
+   * @param{Array<Value>}[values]
+   * @param{Boolean}     [presort=false] Pre-sort keys and values, using
+   *                                       tree's comparator. Sorting is done
+   *                                       in-place
+   * @return {AVLTree}
+   */
+  Tree.prototype.load = function load (keys, values, presort) {
+      if ( keys === void 0 ) keys = [];
+      if ( values === void 0 ) values = [];
+      if ( presort === void 0 ) presort = false;
+
+    var size = keys.length;
+    var comparator = this._comparator;
+
+    // sort if needed
+    if (presort) { sort(keys, values, 0, size - 1, comparator); }
+
+    if (this._root === null) { // empty tree
+      this._root = loadRecursive(this._root, keys, values, 0, size);
+      this._size = size;
+    } else { // that re-builds the whole tree from two in-order traversals
+      var mergedList = mergeLists(this.toList(), createList(keys, values), comparator);
+      size = this._size + size;
+      this._root = sortedListToBST({ head: mergedList }, 0, size);
+    }
+    return this;
+  };
+
+
+  /**
+   * @return {Boolean}
+   */
+  Tree.prototype.isEmpty = function isEmpty () { return this._root === null; };
+
+  prototypeAccessors.size.get = function () { return this._size; };
+
+
+  /**
+   * @param{NodePrinter=} printNode
+   * @return {String}
+   */
+  Tree.prototype.toString = function toString (printNode) {
+      if ( printNode === void 0 ) printNode = function (n) { return n.key; };
+
+    var out = [];
+    printRow(this._root, '', true, function (v) { return out.push(v); }, printNode);
+    return out.join('');
+  };
+
+
+  Tree.prototype.update = function update (key, newKey, newData) {
+    var comparator = this._comparator;
+    var ref = split(key, this._root, comparator);
+      var left = ref.left;
+      var right = ref.right;
+    this._size--;
+    if (comparator(key, newKey) < 0) {
+      right = insert(newKey, newData, right, comparator, this);
+    } else {
+      left = insert(newKey, newData, left, comparator, this);
+    }
+    this._root = merge(left, right, comparator);
+  };
+
+
+  Tree.prototype.split = function split$1 (key) {
+    return split(key, this._root, this._comparator);
+  };
+
+  Object.defineProperties( Tree.prototype, prototypeAccessors );
+
+
+  function loadRecursive (parent, keys, values, start, end) {
+    var size = end - start;
+    if (size > 0) {
+      var middle = start + Math.floor(size / 2);
+      var key    = keys[middle];
+      var data   = values[middle];
+      var node   = { key: key, data: data, parent: parent };
+      node.left    = loadRecursive(node, keys, values, start, middle);
+      node.right   = loadRecursive(node, keys, values, middle + 1, end);
+      return node;
+    }
+    return null;
+  }
+
+
+  function createList(keys, values) {
+    var head = { next: null };
+    var p = head;
+    for (var i = 0; i < keys.length; i++) {
+      p = p.next = { key: keys[i], data: values[i] };
+    }
+    p.next = null;
+    return head.next;
+  }
+
+
+  function toList (root) {
+    var current = root;
+    var Q = [], done = false;
+
+    var head = { next: null };
+    var p = head;
+
+    while (!done) {
+      if (current) {
+        Q.push(current);
+        current = current.left;
+      } else {
+        if (Q.length > 0) {
+          current = p = p.next = Q.pop();
+          current = current.right;
+        } else { done = true; }
+      }
+    }
+    p.next = null; // that'll work even if the tree was empty
+    return head.next;
+  }
+
+
+  function sortedListToBST(list, start, end) {
+    var size = end - start;
+    if (size > 0) {
+      var middle = start + Math.floor(size / 2);
+      var left = sortedListToBST(list, start, middle);
+
+      var root = list.head;
+      root.left = left;
+
+      list.head = list.head.next;
+
+      root.right = sortedListToBST(list, middle + 1, end);
+      return root;
+    }
+    return null;
+  }
+
+
+  function mergeLists (l1, l2, compare) {
+    if ( compare === void 0 ) compare = function (a, b) { return a - b; };
+
+    var head = {}; // dummy
+    var p = head;
+
+    var p1 = l1;
+    var p2 = l2;
+
+    while (p1 !== null && p2 !== null) {
+      if (compare(p1.key, p2.key) < 0) {
+        p.next = p1;
+        p1 = p1.next;
+      } else {
+        p.next = p2;
+        p2 = p2.next;
+      }
+      p = p.next;
+    }
+
+    if (p1 !== null)      { p.next = p1; }
+    else if (p2 !== null) { p.next = p2; }
+
+    return head.next;
+  }
+
+
+
+  function sort(keys, values, left, right, compare) {
+    if (left >= right) { return; }
+
+    var pivot = keys[(left + right) >> 1];
+    var i = left - 1;
+    var j = right + 1;
+
+    while (true) {
+      do { i++; } while (compare(keys[i], pivot) < 0);
+      do { j--; } while (compare(keys[j], pivot) > 0);
+      if (i >= j) { break; }
+
+      var tmp = keys[i];
+      keys[i] = keys[j];
+      keys[j] = tmp;
+
+      tmp = values[i];
+      values[i] = values[j];
+      values[j] = tmp;
+    }
+
+    sort(keys, values,  left,     j, compare);
+    sort(keys, values, j + 1, right, compare);
+  }
+
+  return Tree;
 
 })));
-//# sourceMappingURL=splay.js.map
