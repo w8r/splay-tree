@@ -5,7 +5,7 @@ import Tree from '../index';
 
 describe ('empty check', () => {
 
-  it('should return whether the tree is empty', () => {
+  it ('should return whether the tree is empty', () => {
     const tree = new Tree();
 
     assert.isTrue(tree.isEmpty());

@@ -1,7 +1,14 @@
-# Splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![CircleCI](https://circleci.com/gh/w8r/splay-tree.svg?style=svg)](https://circleci.com/gh/w8r/splay-tree)
+# Fast splay tree [![npm version](https://badge.fury.io/js/fast-splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splaytree.svg?branch=master)](https://travis-ci.org/w8r/splaytree)
 
-[Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 500 lines of code)
+[Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 1000 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks agains other trees.
+
+This tree is based on **top-down** splaying algorithm by D.Sleator. It supports
+ - splitting, merging
+ - updating of the keys
+ - bulk loading of the items into an empty or non-empty tree
+ - insertion with duplicates or no duplicates
+ - lookup without splaying
 
 ![Splay-tree](https://i.stack.imgur.com/CNSAZ.png)
 
@@ -56,8 +63,7 @@ Or use the compiled version 'dist/splay.js'.
 * `tree.maxNode():Node` - Returns the node with highest key
 * `tree.prev(node):Node` - Predecessor node
 * `tree.next(node):Node` - Successor node
-* `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. It expects values and keys to be sorted, but if `presort` is `true`, it will sort keys and values using the comparator(in-place!). You can only use it on an empty tree.
-* `SplayTree.createTree(keys:Array<Key>, [values:Array<Value>][,comparator][,presort:Boolean][,noDuplicates:Boolean]):SplayTree` - creates and loads the tree. Equivalent of `new SplayTree(comparator, noDuplicates).load(keys, values, presort)`.
+* `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. It expects values and keys to be sorted, but if `presort` is `true`, it will sort keys and values using the comparator(in-place, your arrays are going to be altered).
 
 **Comparator**
 
@@ -137,28 +143,43 @@ npm run benchmark
 
 ```
 Insert (x1000)
-Bintrees x 3,320 ops/sec ±4.69% (81 runs sampled)
-Functional red black tree x 1,717 ops/sec ±7.36% (71 runs sampled)
-Google Closure library AVL x 538 ops/sec ±7.55% (70 runs sampled)
-Splay (current) x 1,783 ops/sec ±6.07% (73 runs sampled)
-AVL x 4,790 ops/sec ±4.38% (76 runs sampled)
-- Fastest is AVL
+ - Bintrees RB x 5,779 ops/sec ±1.37% (85 runs sampled) mean 0.173ms
+ - Splay (current) x 9,264 ops/sec ±2.70% (88 runs sampled) mean 0.108ms
+ - AVL x 7,459 ops/sec ±1.07% (91 runs sampled) mean 0.134ms
+- Fastest is Splay (current)
 
 Random read (x1000)
-Bintrees x 7,342 ops/sec ±2.72% (83 runs sampled)
-Functional red black tree x 12,263 ops/sec ±5.32% (77 runs sampled)
-Google Closure library AVL x 19.12 ops/sec ±12.82% (39 runs sampled)
-Splay (current) x 14,897 ops/sec ±1.16% (85 runs sampled)
-AVL x 14,381 ops/sec ±2.42% (88 runs sampled)
-- Fastest is Splay (current)
+ - Bintrees RB x 19,317 ops/sec ±0.52% (90 runs sampled) mean 0.052ms
+ - Splay (current) x 7,635 ops/sec ±0.92% (91 runs sampled) mean 0.131ms
+ - Splay (current) - static x 16,350 ops/sec ±0.75% (87 runs sampled) mean 0.061ms
+ - AVL x 15,782 ops/sec ±0.57% (91 runs sampled) mean 0.063ms
+- Fastest is Bintrees RB
 
 Remove (x1000)
-Bintrees x 99,828 ops/sec ±2.22% (83 runs sampled)
-Functional red black tree x 22,012 ops/sec ±4.16% (80 runs sampled)
-Splay (current) x 112,646 ops/sec ±4.04% (80 runs sampled)
-Google Closure library AVL x 25,676 ops/sec ±3.97% (75 runs sampled)
-AVL x 78,340 ops/sec ±2.44% (85 runs sampled)
+ - Bintrees RB x 195,282 ops/sec ±0.85% (90 runs sampled) mean 0.005ms
+ - Splay (current) x 364,630 ops/sec ±6.05% (87 runs sampled) mean 0.003ms
+ - AVL x 95,946 ops/sec ±0.76% (93 runs sampled) mean 0.010ms
 - Fastest is Splay (current)
+
+Bulk-load (x10000)
+ - 1 by 1 x 266 ops/sec ±1.58% (83 runs sampled) mean 3.755ms
+ - bulk load (build) x 287 ops/sec ±3.02% (76 runs sampled) mean 3.487ms
+- Fastest is bulk load (build)
+
+Bulk-add (x1000) to 1000
+ - 1 by 1 x 2,859 ops/sec ±3.35% (77 runs sampled) mean 0.350ms
+ - bulk add (rebuild) x 3,755 ops/sec ±2.67% (67 runs sampled) mean 0.266ms
+- Fastest is bulk add (rebuild)
+
+Bulk-remove-insert (10%) of 10000
+ - 1 by 1 x 771 ops/sec ±4.31% (68 runs sampled) mean 1.297ms
+ - bulk add (rebuild) x 706 ops/sec ±1.12% (88 runs sampled) mean 1.416ms
+- Fastest is 1 by 1
+
+Bulk-update (10%) of 10000
+ - 1 by 1 x 717 ops/sec ±1.96% (79 runs sampled) mean 1.394ms
+ - split-merge x 705 ops/sec ±1.68% (85 runs sampled) mean 1.419ms
+- Fastest is 1 by 1
 ```
 
 Adding google closure library to the benchmark is, of course, unfair, cause the
@@ -175,14 +196,14 @@ npm run build
 
 ## TODO
 
-- [ ] Add option for bubbling elements up as you retrieve them
-- [ ] Fix splaying for performance
+- [ ] try and add parent fields for efficient `.prev()` and `.next()`, or iterators
+
 
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2017 Alexander Milevski <info@w8r.name>
+Copyright (c) 2018 Alexander Milevski <info@w8r.name>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

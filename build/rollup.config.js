@@ -10,7 +10,9 @@ const banner = `\
  */
 `;
 export default {
-  banner,
-  entry:     'index.js',
-  sourceMap: true
+  input:     'index.js',
+  output: {
+    name: 'SplayTree',
+    banner,
+  }
 };

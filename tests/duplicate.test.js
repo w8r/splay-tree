@@ -3,9 +3,9 @@ import { assert }       from 'chai';
 
 import Tree from '../index';
 
-describe('Duplicate keys', () => {
+describe ('Duplicate keys', () => {
 
-  it('should allow inserting of duplicate key', () => {
+  it ('should allow inserting of duplicate key', () => {
     const tree = new Tree();
     const values = [2, 12, 1, -6, 1];
 
@@ -18,7 +18,7 @@ describe('Duplicate keys', () => {
   });
 
 
-  it('should allow multiple duplicate keys in a row', () => {
+  it ('should allow multiple duplicate keys in a row', () => {
     const tree = new Tree();
     const values = [2, 12, 1, 1, -6, 2, 1, 1, 13];
 
@@ -57,7 +57,6 @@ describe('Duplicate keys', () => {
     let size = tree.size;
     while (!tree.isEmpty()) {
       tree.pop();
-
       assert.equal(tree.size, --size);
     }
   });
@@ -67,7 +66,7 @@ describe('Duplicate keys', () => {
     const values = [2, 12, 1, -6, 1];
 
     values.forEach((v) => {
-      tree.insert(v);
+      tree.add(v);
     });
 
     assert.deepEqual(tree.keys(), [-6, 1, 2, 12]);

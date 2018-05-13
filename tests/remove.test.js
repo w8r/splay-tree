@@ -6,20 +6,22 @@ import Tree from '../index';
 
 describe('remove', () => {
 
-  it('should not change the size of a tree with no root', () => {
+  it ('should not change the size of empty tree', () => {
     const tree = new Tree();
     tree.remove(1);
     assert.equal(tree.size, 0);
   });
 
-  it('should remove a single key', () => {
+
+  it ('should remove a single key', () => {
     const tree = new Tree();
     tree.insert(1);
     tree.remove(1);
     assert.isTrue(tree.isEmpty());
   });
 
-  it('should take the right child if the left does not exist', () => {
+
+  it ('should take the right child if the left does not exist', () => {
     const tree = new Tree();
     tree.insert(1);
     tree.insert(2);
@@ -27,7 +29,8 @@ describe('remove', () => {
     assert.equal(tree._root.key, 2);
   });
 
-  it('should take the left child if the right does not exist', () => {
+
+  it ('should take the left child if the right does not exist', () => {
     const tree = new Tree();
     tree.insert(2);
     tree.insert(1);
@@ -36,7 +39,7 @@ describe('remove', () => {
   });
 
 
-  it('should not break the existing pointers to nodes', () => {
+  it ('should not break the existing pointers to nodes', () => {
     const tree = new Tree();
 
     const n1 = tree.insert(1);
@@ -49,4 +52,14 @@ describe('remove', () => {
     assert.equal(n3.key, 3);
   });
 
+
+  it ('pop()', () => {
+    const tree = new Tree();
+    tree.insert(2);
+    tree.insert(1);
+    tree.remove(2);
+
+    const removed = tree.pop();
+    assert.deepEqual(removed, { key: 1, data: undefined });
+  });
 });
