@@ -195,7 +195,8 @@
     var x;
     if (t === null) { return null; }
     t = splay(i, t, comparator);
-    if (i === t.key) {               /* found it */
+    var cmp = comparator(i, t.key);
+    if (cmp === 0) {               /* found it */
       if (t.left === null) {
         x = t.right;
       } else {
