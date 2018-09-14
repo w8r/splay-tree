@@ -45,8 +45,9 @@ Or use the compiled version 'dist/splay.js'.
 
 ## API
 
-* `new SplayTree([comparator], [noDuplicates:Boolean])`, where `comparator` is optional comparison function
-* `tree.insert(key:any, [data:any]):Node` - Insert item
+* `new SplayTree([comparator])`, where `comparator` is optional comparison function
+* `tree.insert(key:any, [data:any]):Node` - Insert item, allow duplicate keys
+* `tree.add(key:any, [data:any]):Node` - Insert item if it is not present
 * `tree.remove(key:any):Boolean` - Remove item
 * `tree.removeNode(Node:any)|Boolean` - Remove node
 * `tree.find(key):Node|Null` - Return node by its key
@@ -81,13 +82,9 @@ Or use the compiled version 'dist/splay.js'.
 
  **Duplicate keys**
 
- By default, tree allows duplicate keys. You can disable that by passing `true`
- as a second parameter to the tree constructor. In that case if you would try to
- instert an item with the key, that is already present in the tree, it will not
- be inserted.
- However, the default behavior allows for duplicate keys, cause there are cases
- where you cannot predict that the keys would be unique (example: overlapping
+* `inert()` method allows duplicate keys. This can be useful in certain applications (example: overlapping
  points in 2D).
+* `add()` method will not allow duplicate keys - if key is already present in the tree, no new node is created
 
 ## Example
 
