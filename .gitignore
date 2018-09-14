@@ -2,3 +2,4 @@ build/*bundle.js*
 node_modules
 npm-debug.log
 tests/types.js
+.reify-cache

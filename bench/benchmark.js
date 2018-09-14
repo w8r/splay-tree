@@ -1,7 +1,7 @@
-const Benchmark = require('benchmark');
-const AVLTree   = require('avl');
-const RBTree    = require('bintrees').RBTree;
-const Splay     = require('../dist/splay');
+import Benchmark from 'benchmark';
+import AVLTree from 'avl';
+import { RBTree } from 'bintrees';
+import Splay from '../dist/splay';
 
 
 function generateRValues(N, min = 0, max = N) {

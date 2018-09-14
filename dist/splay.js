@@ -1,5 +1,5 @@
 /**
- * splaytree v2.0.2
+ * splaytree v2.0.3
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -796,3 +796,4 @@
   return Tree;
 
 })));
+//# sourceMappingURL=splay.js.map

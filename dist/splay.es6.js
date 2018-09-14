@@ -1,5 +1,5 @@
 /**
- * splaytree v2.0.2
+ * splaytree v2.0.3
  * Fast Splay tree for Node and browser
  *
  * @author Alexander Milevski <info@w8r.name>
@@ -764,3 +764,4 @@ function sort(keys, values, left, right, compare) {
 }
 
 export default Tree;
+//# sourceMappingURL=splay.es6.js.map
