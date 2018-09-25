@@ -23,7 +23,7 @@ export default class SplayTree<Key extends any, Value extends any> {
   isEmpty (): boolean;
   keys (): Array<Key>;
   values (): Array<Value>;
-  range (minKey:Key, maxKey:Key, visit:TraverseCallback<Key, Value>, context?:any);
+  range (minKey:Key, maxKey:Key, visit:TraverseCallback<Key, Value>, context?:any): void;
   pop (): Node<Key, Value>;
   min (): Key;
   max (): Key;
