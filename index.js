@@ -388,22 +388,27 @@ export default class Tree {
 
   /**
    * @param  {Key} key
-   * @return {Node|null}
+   * @return boolean true if node removed.
    */
   remove (key) {
+    const size = this._size
     this._root = remove(key, this._root, this._comparator, this);
+    return size > this._size;
   }
 
   /**
    * @param {Node} node
    * @param {Node} parent optional parent of node
+   * @return boolean true if node removed.
    */
    removeNode (node, parent = null) {
+     const size = this._size
      this._root = removeNode(node, parent, this._comparator, this)
+     return size > this._size;
    }
 
   /**
-   * Removes and returns the node with smallest key
+   * Removes and returns a node with smallest key
    * @return {?Node}
    */
   pop () {

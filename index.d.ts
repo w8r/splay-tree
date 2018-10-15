@@ -17,7 +17,10 @@ export default class SplayTree<Key extends any, Value extends any> {
   insert (key: Key, data?: Value): Node<Key, Value>;
   add (key: Key, data?: Value): Node<Key, Value>;
   remove (key: Key): boolean;
-  find (key: Key): Node<Key, Value>;
+  removeNode (node: Node<Key, Value>): boolean;
+  find (key: Key): Node<Key, Value> | null;
+  findStatic(key: Key): Node<Key, Value> | null;
+  findParent(node: Node<Key, Value>): Node<Key, Value> | null;
   at (index: number): Node<Key, Value>;
   contains (key: Key): boolean;
   isEmpty (): boolean;

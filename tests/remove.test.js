@@ -8,7 +8,8 @@ describe('remove', () => {
 
   it ('should not change the size of empty tree', () => {
     const tree = new Tree();
-    tree.remove(1);
+    const result = tree.remove(1);
+    assert.equal(result, false);
     assert.equal(tree.size, 0);
     assert.equal(tree.findStatic(1), null);
   });
@@ -17,8 +18,8 @@ describe('remove', () => {
   it ('should remove a single key', () => {
     const tree = new Tree();
     tree.insert(1);
-    tree.remove(1);
-    console.log(tree.toString())
+    const result = tree.remove(1);
+    assert.equal(result, true);
     assert.isTrue(tree.isEmpty());
     assert.equal(tree.findStatic(1), null);
   });
