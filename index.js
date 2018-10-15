@@ -174,29 +174,134 @@ function add (i, data, t, comparator, tree) {
 /**
  * Deletes i from the tree if it's there
  * @param {Key}        i
- * @param {Tree}       tree
+ * @param {Node}       root
  * @param {Comparator} comparator
  * @param {Tree}       tree
  * @return {Node}      new root
  */
-function remove (i, t, comparator, tree) {
-  let x;
-  if (t === null) return null;
-  t = splay(i, t, comparator);
-  var cmp = comparator(i, t.key);
-  if (cmp === 0) {               /* found it */
-    if (t.left === null) {
-      x = t.right;
+function remove (i, root, comparator, tree) {
+  let current = root;
+  let parent = null;
+  while (current) {
+    const cmp = comparator(i, current.key);
+    if (cmp === 0) {
+      return removeNode(current, parent, comparator, tree);
+    } else if (cmp < 0) {
+      parent = current;
+      current = current.left;
     } else {
-      x = splay(i, t.left, comparator);
-      x.right = t.right;
+      parent = current;
+      current = current.right;
     }
-    tree._size--;
-    return x;
   }
-  return t;                         /* It wasn't there */
+  return tree._root;
 }
 
+/**
+  * Find parent of node if node is in tree.
+  * @param {Node} t tree node to find.
+  * @param {Node} root root of subtree to search under
+  * @param {Comparator} comparator
+  * @param {Tree} tree
+  * @return {Node} parent of node
+  */
+function findParent (t, root, comparator) {
+  let current = root;
+  let parent = null;
+  while (current) {
+    const cmp = comparator(t.key, current.key);
+    if (cmp === 0) {
+      break;
+    } else if (cmp < 0) {
+      parent = current;
+      current = current.left;
+    } else {
+      parent = current;
+      current = current.right;
+    }
+  }
+  if (current === null) {
+    return null;
+  }
+  // search subtree of equal keys
+  let parents = [];
+  while (current !== t) {
+    if (current.left !== null &&
+        comparator(t.key, current.left.key) === 0) {
+      parents.push(current);
+      parent = current;
+      current = current.left;
+    } else if (current.right !== null &&
+        comparator(t.key, current.left.key) === 0) {
+      parent = current;
+      current = current.right;
+    } else {
+      parent = null;
+      while (parents.length > 0) {
+        parent = parents.pop();
+        if (comparator(t.key, parent.right.key) === 0) {
+          current = parent.right;
+        } else {
+          return null;
+        }
+      }
+    }
+  }
+  return parent;
+}
+
+/**
+  * Removes node from tree
+  * @param {Node} t tree node to remove
+  * @param {Node} parent parent of t (null if t is root or unknown)
+  * @param {Comparator} comparator
+  * @param {Tree} tree
+  * @return {Node}      new root
+  */
+
+function removeNode(t, parent, comparator, tree) {
+  let child
+  if (t.right === null || t.left === null) {
+    if (t === tree._root) {
+      tree._size -=1
+      return t.right || t.left
+    } else if (parent === null) {
+      parent = findParent(t, tree._root, comparator)
+    }
+    if (parent === null) {
+      // t not in tree -- do nothing
+      return tree._root
+    } else if (parent.right === t) {
+      parent.right = t.right
+    } else {
+      parent.left = t.left
+    }
+  } else {
+    // replace t with rightmost child of left sub-node,  moving child's
+    // right branch to leftmost branch of t.right
+    let parent = t
+    child = t.left
+    while (child.right !== null) {
+      parent = child
+      child = child.right
+    }
+
+    let left = t.right
+    while (left.left !== null) {
+      left = left.left
+    }
+    if (parent.right === child) {
+      parent.right = child.left
+    } else {
+      parent.left = child.left
+    }
+    left.left = child.right
+    t.key = child.key
+    t.data = child.data
+  }
+  tree._size -= 1
+  return tree._root
+}
 
 function split (key, v, comparator) {
   let left, right;
@@ -290,6 +395,13 @@ export default class Tree {
     this._root = remove(key, this._root, this._comparator, this);
   }
 
+  /**
+   * @param {Node} node
+   * @param {Node} parent optional parent of node
+   */
+   removeNode (node, parent = null) {
+     this._root = removeNode(node, parent, this._comparator, this)
+   }
 
   /**
    * Removes and returns the node with smallest key
@@ -299,9 +411,9 @@ export default class Tree {
     let node = this._root;
     if (node) {
       while (node.left) node = node.left;
-      this._root = splay(node.key,  this._root, this._comparator);
-      this._root = remove(node.key, this._root, this._comparator, this);
-      return { key: node.key, data: node.data };
+      const result = { key: node.key, data: node.data };
+      this._root = removeNode(node, null, this._comparator, this);
+      return result;
     }
     return null;
   }
@@ -336,6 +448,15 @@ export default class Tree {
     return this._root;
   }
 
+  /**
+   * Find parent of node if node is in tree.
+   *
+   * @param {Node} node
+   * @return {Node|null}
+   */
+   findParent (node) {
+     return findParent(node, comparator, this)
+   }
 
   /**
    * @param  {Key} key

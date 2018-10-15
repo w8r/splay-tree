@@ -35,7 +35,7 @@ describe ('Duplicate keys', () => {
     const tree = new Tree();
     const values = [2, 12, 1, 1, -6, 1, 1];
 
-    values.forEach((v) => tree.insert(v));
+    values.forEach((v, i) => tree.insert(v, i));
 
     let size = tree.size;
     for (let i = 0; i < 4; i++) {
