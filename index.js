@@ -199,11 +199,10 @@ function remove (i, root, comparator, tree) {
 
 /**
   * Find parent of node if node is in tree.
-  * @param {Node} t tree node to find.
-  * @param {Node} root root of subtree to search under
+  * @param {Node}       t tree node to find.
+  * @param {Node}       root root of subtree to search under
   * @param {Comparator} comparator
-  * @param {Tree} tree
-  * @return {Node} parent of node
+  * @return {Node}      parent of node
   */
 function findParent (t, root, comparator) {
   let current = root;
@@ -252,55 +251,55 @@ function findParent (t, root, comparator) {
 
 /**
   * Removes node from tree
-  * @param {Node} t tree node to remove
-  * @param {Node} parent parent of t (null if t is root or unknown)
+  * @param {Node}       t tree node to remove
+  * @param {Node}       parent parent of t (null if t root or unknown)
   * @param {Comparator} comparator
-  * @param {Tree} tree
+  * @param {Tree}       tree
   * @return {Node}      new root
   */
 
 function removeNode(t, parent, comparator, tree) {
-  let child
+  let child;
   if (t.right === null || t.left === null) {
     if (t === tree._root) {
-      tree._size -=1
-      return t.right || t.left
+      tree._size -=1;
+      return t.right || t.left;
     } else if (parent === null) {
-      parent = findParent(t, tree._root, comparator)
+      parent = findParent(t, tree._root, comparator);
     }
     if (parent === null) {
       // t not in tree -- do nothing
-      return tree._root
+      return tree._root;
     } else if (parent.right === t) {
-      parent.right = t.right
+      parent.right = t.right;
     } else {
-      parent.left = t.left
+      parent.left = t.left;
     }
   } else {
-    // replace t with rightmost child of left sub-node,  moving child's
+    // replace t with rightmost child of left sub-node, moving child's
     // right branch to leftmost branch of t.right
-    let parent = t
-    child = t.left
+    let parent = t;
+    child = t.left;
     while (child.right !== null) {
-      parent = child
-      child = child.right
+      parent = child;
+      child = child.right;
     }
 
-    let left = t.right
+    let left = t.right;
     while (left.left !== null) {
-      left = left.left
+      left = left.left;
     }
     if (parent.right === child) {
-      parent.right = child.left
+      parent.right = child.left;
     } else {
-      parent.left = child.left
+      parent.left = child.left;
     }
-    left.left = child.right
-    t.key = child.key
-    t.data = child.data
+    left.left = child.right;
+    t.key = child.key;
+    t.data = child.data;
   }
-  tree._size -= 1
-  return tree._root
+  tree._size -= 1;
+  return tree._root;
 }
 
 function split (key, v, comparator) {
@@ -455,7 +454,7 @@ export default class Tree {
    * @return {Node|null}
    */
    findParent (node) {
-     return findParent(node, comparator, this)
+     return findParent(node, this._root, comparator);
    }
 
   /**
