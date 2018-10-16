@@ -225,13 +225,13 @@ function findParent (t, root, comparator) {
   // search subtree of equal keys
   let parents = [];
   while (current !== t) {
-    if (current.left !== null &&
-        comparator(t.key, current.left.key) === 0) {
+    if (current.left !== null
+        && comparator(t.key, current.left.key) === 0) {
       parents.push(current);
       parent = current;
       current = current.left;
-    } else if (current.right !== null &&
-        comparator(t.key, current.left.key) === 0) {
+    } else if (current.right !== null
+        && comparator(t.key, current.left.key) === 0) {
       parent = current;
       current = current.right;
     } else {
@@ -262,7 +262,7 @@ function removeNode(t, parent, comparator, tree) {
   let child;
   if (t.right === null || t.left === null) {
     if (t === tree._root) {
-      tree._size -=1;
+      tree._size -= 1;
       return t.right || t.left;
     } else if (parent === null) {
       parent = findParent(t, tree._root, comparator);
@@ -391,7 +391,7 @@ export default class Tree {
    * @return boolean true if node removed.
    */
   remove (key) {
-    const size = this._size
+    const size = this._size;
     this._root = remove(key, this._root, this._comparator, this);
     return size > this._size;
   }
@@ -401,11 +401,11 @@ export default class Tree {
    * @param {Node} parent optional parent of node
    * @return boolean true if node removed.
    */
-   removeNode (node, parent = null) {
-     const size = this._size
-     this._root = removeNode(node, parent, this._comparator, this)
-     return size > this._size;
-   }
+  removeNode (node, parent = null) {
+    const size = this._size;
+    this._root = removeNode(node, parent, this._comparator, this);
+    return size > this._size;
+  }
 
   /**
    * Removes and returns a node with smallest key
@@ -458,9 +458,9 @@ export default class Tree {
    * @param {Node} node
    * @return {Node|null}
    */
-   findParent (node) {
-     return findParent(node, this._root, comparator);
-   }
+  findParent (node) {
+    return findParent(node, this._root, this._comparator);
+  }
 
   /**
    * @param  {Key} key
