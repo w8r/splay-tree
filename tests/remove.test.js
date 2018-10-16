@@ -8,16 +8,20 @@ describe('remove', () => {
 
   it ('should not change the size of empty tree', () => {
     const tree = new Tree();
-    tree.remove(1);
+    const result = tree.remove(1);
+    assert.equal(result, false);
     assert.equal(tree.size, 0);
+    assert.equal(tree.findStatic(1), null);
   });
 
 
   it ('should remove a single key', () => {
     const tree = new Tree();
     tree.insert(1);
-    tree.remove(1);
+    const result = tree.remove(1);
+    assert.equal(result, true);
     assert.isTrue(tree.isEmpty());
+    assert.equal(tree.findStatic(1), null);
   });
 
 
@@ -27,6 +31,8 @@ describe('remove', () => {
     tree.insert(2);
     tree.remove(1);
     assert.equal(tree._root.key, 2);
+    assert.equal(tree.findStatic(1), null);
+    assert.equal(tree.findStatic(2).key, 2);
   });
 
 
@@ -36,6 +42,8 @@ describe('remove', () => {
     tree.insert(1);
     tree.remove(2);
     assert.equal(tree._root.key, 1);
+    assert.equal(tree.findStatic(2), null);
+    assert.equal(tree.findStatic(1).key, 1);
   });
 
 
@@ -48,10 +56,10 @@ describe('remove', () => {
 
     tree.remove(2);
 
-    assert.equal(n2.key, 2);
-    assert.equal(n3.key, 3);
+    assert.equal(tree.findStatic(1).key, 1);
+    assert.equal(tree.findStatic(2), null);
+    assert.equal(tree.findStatic(3).key, 3);
   });
-
 
   it ('pop()', () => {
     const tree = new Tree();
