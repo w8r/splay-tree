@@ -1,14 +1,15 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../dist/splay';
+import Tree from '../src/index';
+import Node from '../src/node';
 
-function count(tree, size = 0) {
+function count(tree:Node<number,any>, size = 0) {
   if (tree) size += count(tree.left, size) + count(tree.right, size);
   return size;
 }
 
-function toArray(tree, arr = []) {
+function toArray(tree:Node<number,any>, arr:number[] = []) {
   if (tree) {
     toArray(tree.left, arr);
     arr.push(tree.key);
@@ -17,7 +18,7 @@ function toArray(tree, arr = []) {
   return arr;
 }
 
-function createTree(values) {
+function createTree(values:any[]) {
   const t = new Tree();
   values.forEach((v) => t.insert(v));
   return t;

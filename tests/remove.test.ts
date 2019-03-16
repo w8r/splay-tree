@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../dist/splay';
+import Tree from '../src/index';
 
 
 describe('remove', () => {
@@ -26,7 +26,7 @@ describe('remove', () => {
     tree.insert(1);
     tree.insert(2);
     tree.remove(1);
-    assert.equal(tree._root.key, 2);
+    assert.equal(tree.root.key, 2);
   });
 
 
@@ -35,7 +35,7 @@ describe('remove', () => {
     tree.insert(2);
     tree.insert(1);
     tree.remove(2);
-    assert.equal(tree._root.key, 1);
+    assert.equal(tree.root.key, 1);
   });
 
 

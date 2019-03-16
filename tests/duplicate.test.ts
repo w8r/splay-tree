@@ -1,12 +1,12 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../dist/splay';
+import Tree from '../src/index';
 
 describe ('Duplicate keys', () => {
 
   it ('should allow inserting of duplicate key', () => {
-    const tree = new Tree();
+    const tree = new Tree<Number,any>();
     const values = [2, 12, 1, -6, 1];
 
     values.forEach((v) => {
@@ -62,7 +62,7 @@ describe ('Duplicate keys', () => {
   });
 
   it ('should disallow duplicates if noDuplicates is set', () => {
-    const tree = new Tree(undefined, true);
+    const tree = new Tree();
     const values = [2, 12, 1, -6, 1];
 
     values.forEach((v) => {

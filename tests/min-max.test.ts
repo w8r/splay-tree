@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../dist/splay';
+import Tree from '../src/index';
 
 
 describe('find min and max', () => {

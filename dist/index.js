@@ -1,4 +1,6 @@
-import Node from './node';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var node_1 = require("./node");
 /* follows "An implementation of top-down splaying"
  * by D. Sleator <sleator@cs.cmu.edu> March 1992
  */
@@ -7,15 +9,12 @@ function DEFAULT_COMPARE(a, b) {
 }
 /**
  * Simple top down splay, not requiring i to be in the tree t.
- * @param {Key} i
- * @param {Node?} t
- * @param {Comparator} comparator
  */
 function splay(i, t, comparator) {
     if (t === null)
         return t;
     var l, r, y;
-    var N = new Node(null, null);
+    var N = new node_1.default(null, null);
     l = r = N;
     while (true) {
         var cmp = comparator(i, t.key);
@@ -64,15 +63,8 @@ function splay(i, t, comparator) {
     t.right = N.left;
     return t;
 }
-/**
- * @param  {Key}        i
- * @param  {Value}      data
- * @param  {Comparator} comparator
- * @param  {Tree}       tree
- * @return {Node}      root
- */
 function insert(i, data, t, comparator, tree) {
-    var node = new Node(i, data);
+    var node = new node_1.default(i, data);
     tree._size++;
     if (t === null) {
         node.left = node.right = null;
@@ -96,7 +88,7 @@ function insert(i, data, t, comparator, tree) {
  * Insert i into the tree t, unless it's already there.
  */
 function add(i, data, t, comparator, tree) {
-    var node = new Node(i, data);
+    var node = new node_1.default(i, data);
     if (t === null) {
         node.left = node.right = null;
         tree._size++;
@@ -179,11 +171,6 @@ function merge(left, right, comparator) {
 }
 /**
  * Prints level of the tree
- * @param  {Node}                        root
- * @param  {String}                      prefix
- * @param  {Boolean}                     isTail
- * @param  {Array<string>}               out
- * @param  {Function(node:Node):String}  printNode
  */
 function printRow(root, prefix, isTail, out, printNode) {
     if (root) {
@@ -223,7 +210,6 @@ var Tree = /** @class */ (function () {
     };
     /**
      * Removes and returns the node with smallest key
-     * @return {?Node}
      */
     Tree.prototype.pop = function () {
         var node = this._root;
@@ -450,12 +436,6 @@ var Tree = /** @class */ (function () {
     };
     /**
      * Bulk-load items. Both array have to be same size
-     * @param  {Array<Key>}    keys
-     * @param  {Array<Value>}  [values]
-     * @param  {Boolean}       [presort=false] Pre-sort keys and values, using
-     *                                         tree's comparator. Sorting is done
-     *                                         in-place
-     * @return {AVLTree}
      */
     Tree.prototype.load = function (keys, values, presort) {
         if (keys === void 0) { keys = []; }
@@ -480,6 +460,11 @@ var Tree = /** @class */ (function () {
     Tree.prototype.isEmpty = function () { return this._root === null; };
     Object.defineProperty(Tree.prototype, "size", {
         get: function () { return this._size; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Tree.prototype, "root", {
+        get: function () { return this._root; },
         enumerable: true,
         configurable: true
     });
@@ -510,14 +495,14 @@ var Tree = /** @class */ (function () {
     };
     return Tree;
 }());
-export default Tree;
+exports.default = Tree;
 function loadRecursive(keys, values, start, end) {
     var size = end - start;
     if (size > 0) {
         var middle = start + Math.floor(size / 2);
         var key = keys[middle];
         var data = values[middle];
-        var node = new Node(key, data);
+        var node = new node_1.default(key, data);
         node.left = loadRecursive(keys, values, start, middle);
         node.right = loadRecursive(keys, values, middle + 1, end);
         return node;
@@ -525,10 +510,10 @@ function loadRecursive(keys, values, start, end) {
     return null;
 }
 function createList(keys, values) {
-    var head = new Node(null, null);
+    var head = new node_1.default(null, null);
     var p = head;
     for (var i = 0; i < keys.length; i++) {
-        p = p.next = new Node(keys[i], values[i]);
+        p = p.next = new node_1.default(keys[i], values[i]);
     }
     p.next = null;
     return head.next;
@@ -536,7 +521,7 @@ function createList(keys, values) {
 function toList(root) {
     var current = root;
     var Q = [], done = false;
-    var head = new Node(null, null);
+    var head = new node_1.default(null, null);
     var p = head;
     while (!done) {
         if (current) {
@@ -570,7 +555,7 @@ function sortedListToBST(list, start, end) {
 }
 function mergeLists(l1, l2, compare) {
     if (compare === void 0) { compare = DEFAULT_COMPARE; }
-    var head = new Node(null, null); // dummy
+    var head = new node_1.default(null, null); // dummy
     var p = head;
     var p1 = l1;
     var p2 = l2;

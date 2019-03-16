@@ -26,9 +26,6 @@ function DEFAULT_COMPARE(a, b) {
 }
 /**
  * Simple top down splay, not requiring i to be in the tree t.
- * @param {Key} i
- * @param {Node?} t
- * @param {Comparator} comparator
  */
 function splay(i, t, comparator) {
     if (t === null)
@@ -83,13 +80,6 @@ function splay(i, t, comparator) {
     t.right = N.left;
     return t;
 }
-/**
- * @param  {Key}        i
- * @param  {Value}      data
- * @param  {Comparator} comparator
- * @param  {Tree}       tree
- * @return {Node}      root
- */
 function insert(i, data, t, comparator, tree) {
     var node = new Node(i, data);
     tree._size++;
@@ -198,11 +188,6 @@ function merge(left, right, comparator) {
 }
 /**
  * Prints level of the tree
- * @param  {Node}                        root
- * @param  {String}                      prefix
- * @param  {Boolean}                     isTail
- * @param  {Array<string>}               out
- * @param  {Function(node:Node):String}  printNode
  */
 function printRow(root, prefix, isTail, out, printNode) {
     if (root) {
@@ -242,7 +227,6 @@ var Tree = /** @class */ (function () {
     };
     /**
      * Removes and returns the node with smallest key
-     * @return {?Node}
      */
     Tree.prototype.pop = function () {
         var node = this._root;
@@ -469,12 +453,6 @@ var Tree = /** @class */ (function () {
     };
     /**
      * Bulk-load items. Both array have to be same size
-     * @param  {Array<Key>}    keys
-     * @param  {Array<Value>}  [values]
-     * @param  {Boolean}       [presort=false] Pre-sort keys and values, using
-     *                                         tree's comparator. Sorting is done
-     *                                         in-place
-     * @return {AVLTree}
      */
     Tree.prototype.load = function (keys, values, presort) {
         if (keys === void 0) { keys = []; }
@@ -499,6 +477,11 @@ var Tree = /** @class */ (function () {
     Tree.prototype.isEmpty = function () { return this._root === null; };
     Object.defineProperty(Tree.prototype, "size", {
         get: function () { return this._size; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Tree.prototype, "root", {
+        get: function () { return this._root; },
         enumerable: true,
         configurable: true
     });

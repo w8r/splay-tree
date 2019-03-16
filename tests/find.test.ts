@@ -1,12 +1,12 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../dist/splay';
+import Tree from '../src/index';
 
 describe ('find', () => {
 
   it('should return key as the result of search', () => {
-    const tree = new Tree();
+    const tree = new Tree<Number,any>();
     assert.equal(tree.find(1), null);
     assert.equal(tree.find(2), null);
     assert.equal(tree.find(3), null);

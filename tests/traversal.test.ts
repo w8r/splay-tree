@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../dist/splay';
+import Tree from '../src/index';
 
 describe('traversal check', () => {
 
@@ -100,7 +100,6 @@ describe('traversal check', () => {
 
     assert.isNull(tree.at(10));
     assert.isNull(tree.at(-1));
-    assert.isNull(tree.at('a'));
   });
 
 
@@ -108,7 +107,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(3, 8, (n) => {
       arr.push(n.key);
     });
@@ -119,7 +118,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(-3,5, (n) => {
       arr.push(n.key);
     });
@@ -131,7 +130,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(3,15, (n) => {
       arr.push(n.key);
     });
@@ -143,7 +142,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(10, 20, (n) => {
       arr.push(n.key);
     });

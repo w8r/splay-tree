@@ -19,9 +19,6 @@ type TreeNodeList<Key,Value> = { head: Node<Key,Value>|null };
 
 /**
  * Simple top down splay, not requiring i to be in the tree t.
- * @param {Key} i
- * @param {Node?} t
- * @param {Comparator} comparator
  */
 function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
   if (t === null) return t;
@@ -72,13 +69,6 @@ function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
 }
 
 
-/**
- * @param  {Key}        i
- * @param  {Value}      data
- * @param  {Comparator} comparator
- * @param  {Tree}       tree
- * @return {Node}      root
- */
 function insert (
   i:Key, data:Value, 
   t:Node<Key,Value>, 
@@ -207,13 +197,9 @@ function merge (
 }
 
 type StringCollector = (s:string) => void;
+
 /**
  * Prints level of the tree
- * @param  {Node}                        root
- * @param  {String}                      prefix
- * @param  {Boolean}                     isTail
- * @param  {Array<string>}               out
- * @param  {Function(node:Node):String}  printNode
  */
 function printRow (
   root:Node<Key,Value>, 
@@ -231,7 +217,7 @@ function printRow (
 }
 
 
-export default class Tree<Key,Value> {
+export default class Tree<Key=number,Value=any> {
 
   private _comparator:Comparator<Key>;
   private _root:Node<Key,Value>|null;
@@ -248,7 +234,7 @@ export default class Tree<Key,Value> {
   /**
    * Inserts a key, allows duplicates
    */
-  insert (key:Key, data:Value):Node<Key,Value> {
+  insert (key:Key, data?:Value):Node<Key,Value> {
     return this._root = insert(key, data, this._root, this._comparator, this);
   }
 
@@ -256,7 +242,7 @@ export default class Tree<Key,Value> {
   /**
    * Adds a key, if it is not present in the tree
    */
-  add (key:Key, data:Value):Node<Key,Value> {
+  add (key:Key, data?:Value):Node<Key,Value> {
     return this._root = add(key, data, this._root, this._comparator, this);
   }
 
@@ -272,7 +258,6 @@ export default class Tree<Key,Value> {
 
   /**
    * Removes and returns the node with smallest key
-   * @return {?Node}
    */
   pop (): { key:Key, data:Value }|null {
     let node = this._root;
@@ -503,12 +488,6 @@ export default class Tree<Key,Value> {
 
   /**
    * Bulk-load items. Both array have to be same size
-   * @param  {Array<Key>}    keys
-   * @param  {Array<Value>}  [values]
-   * @param  {Boolean}       [presort=false] Pre-sort keys and values, using
-   *                                         tree's comparator. Sorting is done
-   *                                         in-place
-   * @return {AVLTree}
    */
   load (keys:Key[] = [], values:Value[] = [], presort:boolean = false) {
     let size = keys.length;
@@ -532,6 +511,7 @@ export default class Tree<Key,Value> {
   isEmpty():boolean { return this._root === null; }
 
   get size ():number { return this._size; }
+  get root ():Node<Key,Value>|null { return this._root; }
 
 
   /**
@@ -545,7 +525,7 @@ export default class Tree<Key,Value> {
   }
 
 
-  update (key:Key, newKey:Key, newData:Value):void {
+  update (key:Key, newKey:Key, newData?:Value):void {
     const comparator = this._comparator;
     let { left, right } = split(key, this._root, comparator);
     this._size--;

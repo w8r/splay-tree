@@ -1,14 +1,22 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "./dist",
-    "module": "es6",
     "noImplicitAny": true,
-    "outDir": "./dist",
+    "diagnostics": true,
+    "declarationDir": "./dist/",
+    "noImplicitThis": true,
+    "noEmitOnError": true,
+    "importHelpers": true,
+    "lib": ["es5", "es6", "dom"],
+    "outDir": "dist",
     "target": "es5"
   },
+  "target": "ESNext",
+  "module": "ES6",
   "include": [
-    "src/**/*.ts"
+    "src"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ],
+  "moduleResolution": "node"
 }

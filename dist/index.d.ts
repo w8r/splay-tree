@@ -4,7 +4,7 @@ export declare type Comparator<Key> = (a: Key, b: Key) => number;
 export declare type Visitor<Key, Value> = (node: Node<Key, Value>) => void;
 export declare type NodePrinter<Key, Value> = (node: Node<Key, Value>) => string;
 declare function DEFAULT_COMPARE(a: Key, b: Key): number;
-export default class Tree<Key, Value> {
+export default class Tree<Key = number, Value = any> {
     private _comparator;
     private _root;
     _size: number;
@@ -12,11 +12,11 @@ export default class Tree<Key, Value> {
     /**
      * Inserts a key, allows duplicates
      */
-    insert(key: Key, data: Value): Node<Key, Value>;
+    insert(key: Key, data?: Value): Node<Key, Value>;
     /**
      * Adds a key, if it is not present in the tree
      */
-    add(key: Key, data: Value): Node<Key, Value>;
+    add(key: Key, data?: Value): Node<Key, Value>;
     /**
      * @param  {Key} key
      * @return {Node|null}
@@ -24,7 +24,6 @@ export default class Tree<Key, Value> {
     remove(key: Key): void;
     /**
      * Removes and returns the node with smallest key
-     * @return {?Node}
      */
     pop(): {
         key: Key;
@@ -63,16 +62,11 @@ export default class Tree<Key, Value> {
     toList(): Node<any, any>;
     /**
      * Bulk-load items. Both array have to be same size
-     * @param  {Array<Key>}    keys
-     * @param  {Array<Value>}  [values]
-     * @param  {Boolean}       [presort=false] Pre-sort keys and values, using
-     *                                         tree's comparator. Sorting is done
-     *                                         in-place
-     * @return {AVLTree}
      */
     load(keys?: Key[], values?: Value[], presort?: boolean): this;
     isEmpty(): boolean;
     readonly size: number;
+    readonly root: Node<Key, Value> | null;
     /**
      * @param  {NodePrinter=} printNode
      * @return {String}

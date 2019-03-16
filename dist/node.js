@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Node = /** @class */ (function () {
     function Node(key, data) {
         this.next = null;
@@ -8,4 +10,4 @@ var Node = /** @class */ (function () {
     }
     return Node;
 }());
-export default Node;
+exports.default = Node;

@@ -12,6 +12,9 @@
     "index.js",
     "index.d.ts"
   ],
+  "directories": {
+    "test": "test"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/w8r/splay-tree.git"
@@ -24,24 +27,22 @@
     "benchmark": "node -r reify bench/benchmark.js",
     "start": "npm run test:watch",
     "test:watch": "nodemon --watch index.js --watch tests --exec 'npm test'",
-    "test": "mocha -r reify tests/**/*.test.js",
+    "test": "mocha -r ts-node/register tests/**/*.test.ts",
     "prepublishOnly": "npm run build && npm test"
   },
   "devDependencies": {
-    "avl": "^1.4.4",
-    "benchmark": "^2.1.4",
-    "bintrees": "^1.0.2",
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.2",
     "chai": "^4.1.2",
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.4",
-    "reify": "^0.17.3",
-    "rollup": "^0.65.2",
-    "rollup-plugin-buble": "^0.19.2",
-    "rollup-plugin-typescript2": "^0.20.1",
-    "typescript": "^3.0.3"
+    "nodemon": "^1.17.5",
+    "reify": "*",
+    "rollup": "*",
+    "rollup-plugin-typescript2": "*",
+    "rollup-plugin-buble": "*",
+    "ts-node": "^6.1.1",
+    "tslib": "^1.9.2",
+    "typescript": "^2.9.2"
   },
   "keywords": [
     "binary-tree",
