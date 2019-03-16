@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../dist/splay';
 
 function count(tree, size = 0) {
   if (tree) size += count(tree.left, size) + count(tree.right, size);

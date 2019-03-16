@@ -1,4 +1,5 @@
 
+import typescript from 'rollup-plugin-typescript2';
 import buble from 'rollup-plugin-buble';
 
 import { 
@@ -20,20 +21,21 @@ const banner = `\
 const name = 'SplayTree';
 
 export default [{
-  input:     'index.js',
+  input: './src/index.ts',
   output: {
     name, banner,
     format: 'es',
     file: 'dist/splay.es6.js',
     sourcemap: true
-  }
+  },
+  plugins: [typescript()]
 }, {
-  input:     'index.js',
+  input: './src/index.ts',
   output: {
     name, banner,
     format: 'umd',
     file: 'dist/splay.js',
     sourcemap: true
   },
-  plugins: [buble()]
+  plugins: [typescript(), buble()]
 }];

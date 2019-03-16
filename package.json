@@ -1,13 +1,12 @@
 {
   "name": "splaytree",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "main": "dist/splay.js",
-  "jsnext:main": "index",
-  "module": "index",
-  "types": "index.d.ts",
+  "module": "dist/splay.es6.js",
+  "types": "dist/splay.d.ts",
   "files": [
     "dist",
     "index.js",
@@ -18,10 +17,9 @@
     "url": "https://github.com/w8r/splay-tree.git"
   },
   "scripts": {
-    "prebuild": "npm run lint",
     "lint": "eslint index.js",
     "build": "rollup -c && npm run types",
-    "types": "tsc index.d.ts tests/types.ts",
+    "types": "tsc --declaration && tsc dist/index.d.ts",
     "prebenchmark": "npm run build",
     "benchmark": "node -r reify bench/benchmark.js",
     "start": "npm run test:watch",
@@ -42,6 +40,7 @@
     "reify": "^0.17.3",
     "rollup": "^0.65.2",
     "rollup-plugin-buble": "^0.19.2",
+    "rollup-plugin-typescript2": "^0.20.1",
     "typescript": "^3.0.3"
   },
   "keywords": [
