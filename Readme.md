@@ -49,8 +49,7 @@ Or use the compiled version 'dist/splay.js'.
 * `new SplayTree([comparator])`, where `comparator` is optional comparison function
 * `tree.insert(key:any, [data:any]):Node` - Insert item, allow duplicate keys
 * `tree.add(key:any, [data:any]):Node` - Insert item if it is not present
-* `tree.remove(key:any):Boolean` - Remove item
-* `tree.removeNode(Node:any)|Boolean` - Remove node
+* `tree.remove(key:any)` - Remove item
 * `tree.find(key):Node|Null` - Return node by its key
 * `tree.findStatic(key):Node|Null` - Return node by its key (doesn't re-balance the tree)
 * `tree.at(index:Number):Node|Null` - Return node by its index in sorted order of keys
