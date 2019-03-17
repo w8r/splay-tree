@@ -74,11 +74,8 @@ function insert (
   i:Key, data:Value,
   t:Node<Key, Value>,
   comparator:Comparator<Key>,
-  tree:Tree<Key, Value>,
-) : Node<Key, Value> {
+):Node<Key,Value> {
   const node = new Node(i, data);
-
-  tree._size++;
 
   if (t === null) {
     node.left = node.right = null;
@@ -97,65 +94,6 @@ function insert (
     t.right = null;
   }
   return node;
-}
-
-
-/**
- * Insert i into the tree t, unless it's already there.
- */
-function add (
-  i:Key, data:Value, t:Node<Key, Value>,
-  comparator:Comparator<Key>, tree:Tree<Key, Value>,
-) : Node<Key, Value> {
-  const node = new Node(i, data);
-
-  if (t === null) {
-    node.left = node.right = null;
-    tree._size++;
-    return node;
-  }
-
-  t = splay(i, t, comparator);
-  const cmp = comparator(i, t.key);
-  if (cmp === 0) return t;
-  else {
-    if (cmp < 0) {
-      node.left = t.left;
-      node.right = t;
-      t.left = null;
-    } else if (cmp > 0) {
-      node.right = t.right;
-      node.left = t;
-      t.right = null;
-    }
-    tree._size++;
-    return node;
-  }
-}
-
-
-/**
- * Deletes i from the tree if it's there
- */
-function remove (
-  i:Key, t:Node<Key, Value>,
-  comparator:Comparator<Key>, tree:Tree<Key, Value>,
-) : Node<Key, Value> {
-  let x;
-  if (t === null) return null;
-  t = splay(i, t, comparator);
-  const cmp = comparator(i, t.key);
-  if (cmp === 0) {               /* found it */
-    if (t.left === null) {
-      x = t.right;
-    } else {
-      x = splay(i, t.left, comparator);
-      x.right = t.right;
-    }
-    tree._size--;
-    return x;
-  }
-  return t;                         /* It wasn't there */
 }
 
 
@@ -224,9 +162,8 @@ function printRow (
 export default class Tree<Key=number, Value=any> {
 
   private _comparator:Comparator<Key>;
-  private _root:Node<Key, Value>|null;
-  public _size:number;
-
+  private _root:Node<Key,Value>|null;
+  private _size:number;
 
   constructor (comparator = DEFAULT_COMPARE) {
     this._comparator = comparator;
@@ -238,16 +175,43 @@ export default class Tree<Key=number, Value=any> {
   /**
    * Inserts a key, allows duplicates
    */
-  public insert (key:Key, data?:Value) : Node<Key, Value> {
-    return this._root = insert(key, data, this._root, this._comparator, this);
+  insert (key:Key, data?:Value):Node<Key,Value> {
+    this._size++;
+    return this._root = insert(key, data, this._root, this._comparator);
   }
 
 
   /**
    * Adds a key, if it is not present in the tree
    */
-  public add (key:Key, data?:Value) : Node<Key, Value> {
-    return this._root = add(key, data, this._root, this._comparator, this);
+  add (key:Key, data?:Value):Node<Key,Value> {
+    const node = new Node(key, data);
+
+    if (this._root === null) {
+      node.left = node.right = null;
+      this._size++;
+      this._root = node;
+    }
+
+    const comparator = this._comparator;
+    const t = splay(key, this._root, comparator);
+    const cmp = comparator(key, t.key);
+    if (cmp === 0) this._root = t;
+    else {
+      if (cmp < 0) {
+        node.left = t.left;
+        node.right = t;
+        t.left = null;
+      } else if (cmp > 0) {
+        node.right = t.right;
+        node.left = t;
+        t.right = null;
+      }
+      this._size++;
+      this._root = node;
+    }
+
+    return this._root;
   }
 
 
@@ -255,8 +219,32 @@ export default class Tree<Key=number, Value=any> {
    * @param  {Key} key
    * @return {Node|null}
    */
-  public remove (key:Key) : void {
-    this._root = remove(key, this._root, this._comparator, this);
+  remove (key:Key):void {
+    this._root = this._remove(key, this._root, this._comparator);
+  }
+
+
+  /**
+   * Deletes i from the tree if it's there
+   */
+  _remove (
+    i:Key, t:Node<Key,Value>, 
+    comparator:Comparator<Key>):Node<Key,Value> {
+    let x;
+    if (t === null) return null;
+    t = splay(i, t, comparator);
+    const cmp = comparator(i, t.key);
+    if (cmp === 0) {               /* found it */
+      if (t.left === null) {
+        x = t.right;
+      } else {
+        x = splay(i, t.left, comparator);
+        x.right = t.right;
+      }
+      this._size--;
+      return x;
+    }
+    return t;                         /* It wasn't there */
   }
 
 
@@ -268,7 +256,7 @@ export default class Tree<Key=number, Value=any> {
     if (node) {
       while (node.left) node = node.left;
       this._root = splay(node.key,  this._root, this._comparator);
-      this._root = remove(node.key, this._root, this._comparator, this);
+      this._root = this._remove(node.key, this._root, this._comparator);
       return { key: node.key, data: node.data };
     }
     return null;
@@ -521,8 +509,7 @@ export default class Tree<Key=number, Value=any> {
   get size () : number { return this._size; }
   get root () : Node<Key, Value>|null { return this._root; }
 
-
-  public toString (printNode:NodePrinter<Key, Value> = (n) => String(n.key)) : string {
+  toString (printNode:NodePrinter<Key,Value> = (n) => String(n.key)):string {
     const out:string[] = [];
     printRow(this._root, '', true, (v) => out.push(v), printNode);
     return out.join('');
@@ -532,11 +519,10 @@ export default class Tree<Key=number, Value=any> {
   public update (key:Key, newKey:Key, newData?:Value) : void {
     const comparator = this._comparator;
     let { left, right } = split(key, this._root, comparator);
-    this._size--;
     if (comparator(key, newKey) < 0) {
-      right = insert(newKey, newData, right, comparator, this);
+      right = insert(newKey, newData, right, comparator);
     } else {
-      left = insert(newKey, newData, left, comparator, this);
+      left = insert(newKey, newData, left, comparator);
     }
     this._root = merge(left, right, comparator);
   }
