@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
-    "diagnostics": true,
     "declarationDir": "./dist/",
     "noImplicitThis": true,
     "noEmitOnError": true,

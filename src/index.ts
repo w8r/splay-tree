@@ -1,30 +1,33 @@
 import Node from './node';
 import { Key, Value } from './types';
 
-export type Comparator<Key> = (a: Key, b:Key) => number;
-export type Visitor<Key,Value> = (node:Node<Key,Value>) => void;
-export type NodePrinter<Key,Value> = (node:Node<Key,Value>) => string;
+
+export type Comparator<Key> = (a:Key, b:Key) => number;
+export type Visitor<Key, Value> = (node:Node<Key, Value>) => void;
+export type NodePrinter<Key, Value> = (node:Node<Key, Value>) => string;
+
 
 /* follows "An implementation of top-down splaying"
  * by D. Sleator <sleator@cs.cmu.edu> March 1992
  */
 
 
-function DEFAULT_COMPARE (a:Key, b:Key):number { 
+function DEFAULT_COMPARE (a:Key, b:Key) : number {
   return a > b ? 1 : a < b ? -1 : 0;
 }
 
-type TreeNodeList<Key,Value> = { head: Node<Key,Value>|null };
+
+type TreeNodeList<Key, Value> = { head:Node<Key, Value>|null };
 
 
 /**
  * Simple top down splay, not requiring i to be in the tree t.
  */
-function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
+function splay (i:Key, t:Node<Key, Value>|null, comparator:Comparator<Key>) {
   if (t === null) return t;
-  let l, r, y;
   const N = new Node(null, null);
-  l = r = N;
+  let l = N;
+  let r = N;
 
   while (true) {
     const cmp = comparator(i, t.key);
@@ -33,7 +36,7 @@ function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
       if (t.left === null) break;
       //if (i < t.left.key) {
       if (comparator(i, t.left.key) < 0) {
-        y = t.left;                           /* rotate right */
+        const y = t.left;                           /* rotate right */
         t.left = y.right;
         y.right = t;
         t = y;
@@ -47,7 +50,7 @@ function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
       if (t.right === null) break;
       //if (i > t.right.key) {
       if (comparator(i, t.right.key) > 0) {
-        y = t.right;                          /* rotate left */
+        const y = t.right;                          /* rotate left */
         t.right = y.left;
         y.left = t;
         t = y;
@@ -56,9 +59,7 @@ function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
       l.right = t;                              /* link left */
       l = t;
       t = t.right;
-    } else {
-      break;
-    }
+    } else break;
   }
   /* assemble */
   l.right = t.left;
@@ -70,11 +71,11 @@ function splay (i:Key, t:Node<Key,Value>|null, comparator:Comparator<Key>) {
 
 
 function insert (
-  i:Key, data:Value, 
-  t:Node<Key,Value>, 
+  i:Key, data:Value,
+  t:Node<Key, Value>,
   comparator:Comparator<Key>,
-  tree:Tree<Key,Value>
-):Node<Key,Value> {
+  tree:Tree<Key, Value>,
+) : Node<Key, Value> {
   const node = new Node(i, data);
 
   tree._size++;
@@ -103,9 +104,9 @@ function insert (
  * Insert i into the tree t, unless it's already there.
  */
 function add (
-  i:Key, data:Value, t:Node<Key,Value>, 
-  comparator:Comparator<Key>, tree:Tree<Key,Value>
-):Node<Key,Value> {
+  i:Key, data:Value, t:Node<Key, Value>,
+  comparator:Comparator<Key>, tree:Tree<Key, Value>,
+) : Node<Key, Value> {
   const node = new Node(i, data);
 
   if (t === null) {
@@ -137,13 +138,13 @@ function add (
  * Deletes i from the tree if it's there
  */
 function remove (
-  i:Key, t:Node<Key,Value>, 
-  comparator:Comparator<Key>, tree:Tree<Key,Value>
-):Node<Key,Value> {
+  i:Key, t:Node<Key, Value>,
+  comparator:Comparator<Key>, tree:Tree<Key, Value>,
+) : Node<Key, Value> {
   let x;
   if (t === null) return null;
   t = splay(i, t, comparator);
-  var cmp = comparator(i, t.key);
+  const cmp = comparator(i, t.key);
   if (cmp === 0) {               /* found it */
     if (t.left === null) {
       x = t.right;
@@ -159,7 +160,8 @@ function remove (
 
 
 function split (key:Key, v:Value, comparator:Comparator<Key>) {
-  let left, right;
+  let left;
+  let right;
   if (v === null) {
     left = right = null;
   } else {
@@ -184,9 +186,9 @@ function split (key:Key, v:Value, comparator:Comparator<Key>) {
 
 
 function merge (
-  left:Node<Key,Value>|null, 
-  right:Node<Key,Value>|null, 
-  comparator:Comparator<Key>
+  left:Node<Key, Value>|null,
+  right:Node<Key, Value>|null,
+  comparator:Comparator<Key>,
 ) {
   if (right === null) return left;
   if (left  === null) return right;
@@ -196,17 +198,19 @@ function merge (
   return right;
 }
 
+
 type StringCollector = (s:string) => void;
+
 
 /**
  * Prints level of the tree
  */
 function printRow (
-  root:Node<Key,Value>, 
-  prefix:string, 
-  isTail:boolean, 
-  out:StringCollector, 
-  printNode:NodePrinter<Key,Value>
+  root:Node<Key, Value>,
+  prefix:string,
+  isTail:boolean,
+  out:StringCollector,
+  printNode:NodePrinter<Key, Value>,
 ) {
   if (root) {
     out(`${ prefix }${ isTail ? '└── ' : '├── ' }${ printNode(root) }\n`);
@@ -217,10 +221,10 @@ function printRow (
 }
 
 
-export default class Tree<Key=number,Value=any> {
+export default class Tree<Key=number, Value=any> {
 
   private _comparator:Comparator<Key>;
-  private _root:Node<Key,Value>|null;
+  private _root:Node<Key, Value>|null;
   public _size:number;
 
 
@@ -234,7 +238,7 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Inserts a key, allows duplicates
    */
-  insert (key:Key, data?:Value):Node<Key,Value> {
+  public insert (key:Key, data?:Value) : Node<Key, Value> {
     return this._root = insert(key, data, this._root, this._comparator, this);
   }
 
@@ -242,7 +246,7 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Adds a key, if it is not present in the tree
    */
-  add (key:Key, data?:Value):Node<Key,Value> {
+  public add (key:Key, data?:Value) : Node<Key, Value> {
     return this._root = add(key, data, this._root, this._comparator, this);
   }
 
@@ -251,7 +255,7 @@ export default class Tree<Key=number,Value=any> {
    * @param  {Key} key
    * @return {Node|null}
    */
-  remove (key:Key):void {
+  public remove (key:Key) : void {
     this._root = remove(key, this._root, this._comparator, this);
   }
 
@@ -259,7 +263,7 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Removes and returns the node with smallest key
    */
-  pop (): { key:Key, data:Value }|null {
+  public pop () : { key:Key, data:Value }|null {
     let node = this._root;
     if (node) {
       while (node.left) node = node.left;
@@ -274,7 +278,7 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Find without splaying
    */
-  findStatic (key:Key):Node<Key,Value>|null {
+  public findStatic (key:Key) : Node<Key, Value>|null {
     let current   = this._root;
     const compare = this._comparator;
     while (current) {
@@ -287,7 +291,7 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  find (key:Key):Node<Key,Value>|null {
+  public find (key:Key) : Node<Key, Value>|null {
     if (this._root) {
       this._root = splay(key, this._root, this._comparator);
       if (this._comparator(key, this._root.key) !== 0) return null;
@@ -296,7 +300,7 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  contains (key:Key):boolean {
+  public contains (key:Key) : boolean {
     let current   = this._root;
     const compare = this._comparator;
     while (current) {
@@ -309,7 +313,7 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  forEach (visitor:Visitor<Key,Value>, ctx?:any):Tree<Key,Value> {
+  public forEach (visitor:Visitor<Key, Value>, ctx?:any) : Tree<Key, Value> {
     let current = this._root;
     const Q = [];  /* Initialize stack s */
     let done = false;
@@ -334,10 +338,11 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Walk key range from `low` to `high`. Stops if `fn` returns a value.
    */
-  range (low:Key, high:Key, fn:Visitor<Key,Value>, ctx?:any):Tree<Key,Value> {
+  public range (low:Key, high:Key, fn:Visitor<Key, Value>, ctx?:any) : Tree<Key, Value> {
     const Q = [];
     const compare = this._comparator;
-    let node = this._root, cmp;
+    let node = this._root;
+    let cmp;
 
     while (Q.length !== 0 || node) {
       if (node) {
@@ -361,7 +366,7 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Returns array of keys
    */
-  keys ():Key[] {
+  public keys () : Key[] {
     const keys:Key[] = [];
     this.forEach(({ key }) => keys.push(key));
     return keys;
@@ -371,32 +376,32 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Returns array of all the data in the nodes
    */
-  values ():Value[] {
+  public values () : Value[] {
     const values:Value[] = [];
     this.forEach(({ data }) => values.push(data));
     return values;
   }
 
 
-  min():Key|null {
+  public min() : Key|null {
     if (this._root) return this.minNode(this._root).key;
     return null;
   }
 
 
-  max():Key|null {
+  public max() : Key|null {
     if (this._root) return this.maxNode(this._root).key;
     return null;
   }
 
 
-  minNode(t = this._root):Node<Key,Value> {
+  public minNode(t = this._root) : Node<Key, Value> {
     if (t) while (t.left) t = t.left;
     return t;
   }
 
 
-  maxNode(t = this._root):Node<Key,Value> {
+  public maxNode(t = this._root) : Node<Key, Value> {
     if (t) while (t.right) t = t.right;
     return t;
   }
@@ -405,8 +410,10 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Returns node at given index
    */
-  at (index:number):Node<Key,Value>|null {
-    let current = this._root, done = false, i = 0;
+  public at (index:number) : Node<Key, Value>|null {
+    let current = this._root;
+    let done = false;
+    let i = 0;
     const Q = [];
 
     while (!done) {
@@ -426,7 +433,7 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  next (d:Node<Key,Value>):Node<Key,Value>|null {
+  public next (d:Node<Key, Value>) : Node<Key, Value>|null {
     let root = this._root;
     let successor = null;
 
@@ -450,7 +457,7 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  prev (d:Node<Key,Value>):Node<Key,Value>|null {
+  public prev (d:Node<Key, Value>) : Node<Key, Value>|null {
     let root = this._root;
     let predecessor = null;
 
@@ -474,14 +481,14 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  clear ():Tree<Key,Value> {
+  public clear () : Tree<Key, Value> {
     this._root = null;
     this._size = 0;
     return this;
   }
 
 
-  toList() {
+  public toList() {
     return toList(this._root);
   }
 
@@ -489,7 +496,7 @@ export default class Tree<Key=number,Value=any> {
   /**
    * Bulk-load items. Both array have to be same size
    */
-  load (keys:Key[] = [], values:Value[] = [], presort:boolean = false) {
+  public load (keys:Key[] = [], values:Value[] = [], presort:boolean = false) {
     let size = keys.length;
     const comparator = this._comparator;
 
@@ -508,24 +515,21 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  isEmpty():boolean { return this._root === null; }
-
-  get size ():number { return this._size; }
-  get root ():Node<Key,Value>|null { return this._root; }
+  public isEmpty() : boolean { return this._root === null; }
 
 
-  /**
-   * @param  {NodePrinter=} printNode
-   * @return {String}
-   */
-  toString (printNode:NodePrinter<Key,Value> = (n) => String(n.key)):string {
+  get size () : number { return this._size; }
+  get root () : Node<Key, Value>|null { return this._root; }
+
+
+  public toString (printNode:NodePrinter<Key, Value> = (n) => String(n.key)) : string {
     const out:string[] = [];
     printRow(this._root, '', true, (v) => out.push(v), printNode);
     return out.join('');
   }
 
 
-  update (key:Key, newKey:Key, newData?:Value):void {
+  public update (key:Key, newKey:Key, newData?:Value) : void {
     const comparator = this._comparator;
     let { left, right } = split(key, this._root, comparator);
     this._size--;
@@ -538,13 +542,13 @@ export default class Tree<Key=number,Value=any> {
   }
 
 
-  split(key:Key) {
+  public split(key:Key) {
     return split(key, this._root, this._comparator);
   }
 }
 
 
-function loadRecursive (keys:Key[], values:Value[], start:number, end:number):Node<Key,Value>|null {
+function loadRecursive (keys:Key[], values:Value[], start:number, end:number) : Node<Key, Value>|null {
   const size = end - start;
   if (size > 0) {
     const middle = start + Math.floor(size / 2);
@@ -559,9 +563,9 @@ function loadRecursive (keys:Key[], values:Value[], start:number, end:number):No
 }
 
 
-function createList(keys:Key[], values:Value[]):Node<Key,Value> {
-  const head = new Node<Key,Value>(null, null);
-  let p:Node<Key,Value> = head;
+function createList(keys:Key[], values:Value[]) : Node<Key, Value> {
+  const head = new Node<Key, Value>(null, null);
+  let p:Node<Key, Value> = head;
   for (let i = 0; i < keys.length; i++) {
     p = p.next = new Node(keys[i], values[i]);
   }
@@ -570,11 +574,12 @@ function createList(keys:Key[], values:Value[]):Node<Key,Value> {
 }
 
 
-function toList (root:Node<Key,Value>):Node<Key,Value> {
-  var current = root;
-  var Q = [], done = false;
+function toList (root:Node<Key, Value>) : Node<Key, Value> {
+  let current = root;
+  const Q = [];
+  let done = false;
 
-  const head = new Node<Key,Value>(null, null);
+  const head = new Node<Key, Value>(null, null);
   let p = head;
 
   while (!done) {
@@ -593,7 +598,7 @@ function toList (root:Node<Key,Value>):Node<Key,Value> {
 }
 
 
-function sortedListToBST(list:TreeNodeList<Key,Value>, start:number, end:number):Node<Key,Value> {
+function sortedListToBST(list:TreeNodeList<Key, Value>, start:number, end:number) : Node<Key, Value> {
   const size = end - start;
   if (size > 0) {
     const middle = start + Math.floor(size / 2);
@@ -611,14 +616,14 @@ function sortedListToBST(list:TreeNodeList<Key,Value>, start:number, end:number)
 }
 
 
-function mergeLists<Key,Value> (
-  l1:Node<Key,Value>, l2:Node<Key,Value>, 
-  compare = DEFAULT_COMPARE):Node<Key,Value> {
-  const head:Node<Key,Value> = new Node<Key,Value>(null, null); // dummy
+function mergeLists<Key, Value> (
+  l1:Node<Key, Value>, l2:Node<Key, Value>,
+  compare = DEFAULT_COMPARE) : Node<Key, Value> {
+  const head:Node<Key, Value> = new Node<Key, Value>(null, null); // dummy
   let p = head;
 
-  let p1:Node<Key,Value> = l1;
-  let p2:Node<Key,Value> = l2;
+  let p1:Node<Key, Value> = l1;
+  let p2:Node<Key, Value> = l2;
 
   while (p1 !== null && p2 !== null) {
     if (compare(p1.key, p2.key) < 0) {
@@ -639,8 +644,8 @@ function mergeLists<Key,Value> (
 
 
 function sort(
-  keys:Key[], values:Value[], 
-  left:number, right:number, compare:Comparator<Key>
+  keys:Key[], values:Value[],
+  left:number, right:number, compare:Comparator<Key>,
 ) {
   if (left >= right) return;
 

@@ -20,7 +20,7 @@
     "url": "https://github.com/w8r/splay-tree.git"
   },
   "scripts": {
-    "lint": "eslint index.js",
+    "lint": "tslint --project tsconfig.json ./src/*.ts",
     "build": "rollup -c && npm run types",
     "types": "tsc --declaration && tsc dist/index.d.ts",
     "prebenchmark": "npm run build",
@@ -28,7 +28,8 @@
     "start": "npm run test:watch",
     "test:watch": "nodemon --watch index.js --watch tests --exec 'npm test'",
     "test": "mocha -r ts-node/register tests/**/*.test.ts",
-    "prepublishOnly": "npm run build && npm test"
+    "prepublishOnly": "npm run build && npm test",
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",
@@ -36,12 +37,14 @@
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
     "nodemon": "^1.17.5",
+    "nyc": "^13.3.0",
     "reify": "*",
     "rollup": "*",
-    "rollup-plugin-typescript2": "*",
     "rollup-plugin-buble": "*",
+    "rollup-plugin-typescript2": "*",
     "ts-node": "^6.1.1",
     "tslib": "^1.9.2",
+    "tslint": "^5.14.0",
     "typescript": "^2.9.2"
   },
   "keywords": [
