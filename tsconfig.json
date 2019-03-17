@@ -7,7 +7,8 @@
     "importHelpers": true,
     "lib": ["es5", "es6", "dom"],
     "outDir": "dist",
-    "target": "es5"
+    "target": "es6",
+    "moduleResolution": "node"
   },
   "target": "ESNext",
   "module": "ES6",
@@ -16,6 +17,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
-  "moduleResolution": "node"
+  ]
 }

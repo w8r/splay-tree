@@ -5,8 +5,8 @@
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "main": "dist/splay.js",
-  "module": "dist/splay.es6.js",
-  "types": "dist/splay.d.ts",
+  "module": "dist/splay.esm.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "index.js",
@@ -40,10 +40,9 @@
     "nyc": "^13.3.0",
     "reify": "*",
     "rollup": "*",
-    "rollup-plugin-buble": "*",
     "rollup-plugin-typescript2": "*",
     "ts-node": "^6.1.1",
-    "tslib": "^1.9.2",
+    "tslib": "^1.9.3",
     "tslint": "^5.14.0",
     "typescript": "^2.9.2"
   },

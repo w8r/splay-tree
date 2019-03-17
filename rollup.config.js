@@ -1,9 +1,10 @@
 
 import typescript from 'rollup-plugin-typescript2';
-import buble from 'rollup-plugin-buble';
 
-import { 
-  version, author, 
+import {
+  version, author,
+  module as esmBundle,
+  main as umdBundle,
   name as moduleName, license, description
 } from './package.json';
 
@@ -25,7 +26,7 @@ export default [{
   output: {
     name, banner,
     format: 'es',
-    file: 'dist/splay.es6.js',
+    file: esmBundle,
     sourcemap: true
   },
   plugins: [typescript()]
@@ -34,8 +35,12 @@ export default [{
   output: {
     name, banner,
     format: 'umd',
-    file: 'dist/splay.js',
+    file: umdBundle,
     sourcemap: true
   },
-  plugins: [typescript(), buble()]
+  plugins: [typescript({
+    tsconfigOverride: {
+      compilerOptions: { target: 'es5' }
+    }
+  })]
 }];
