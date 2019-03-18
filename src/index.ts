@@ -162,13 +162,11 @@ function printRow (
 export default class Tree<Key=number, Value=any> {
 
   private _comparator:Comparator<Key>;
-  private _root:Node<Key,Value>|null;
-  private _size:number;
+  private _root:Node<Key,Value>|null = null;
+  private _size:number = 0;
 
   constructor (comparator = DEFAULT_COMPARE) {
     this._comparator = comparator;
-    this._root = null;
-    this._size = 0;
   }
 
 
@@ -228,7 +226,7 @@ export default class Tree<Key=number, Value=any> {
    * Deletes i from the tree if it's there
    */
   _remove (
-    i:Key, t:Node<Key,Value>, 
+    i:Key, t:Node<Key,Value>,
     comparator:Comparator<Key>):Node<Key,Value> {
     let x;
     if (t === null) return null;
