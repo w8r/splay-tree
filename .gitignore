@@ -5,3 +5,5 @@ tests/types.js
 .reify-cache
 .rpt2_cache
 dist
+coverage
+.nyc_output/
