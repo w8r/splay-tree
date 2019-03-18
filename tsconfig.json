@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
-    "declarationDir": "./dist/",
+    "declaration": false,
+    "declarationDir": "./typings/",
     "noImplicitThis": true,
     "noEmitOnError": true,
     "importHelpers": true,

@@ -6,7 +6,7 @@
   "description": "Fast Splay tree for Node and browser",
   "main": "dist/splay.js",
   "module": "dist/splay.esm.js",
-  "types": "dist/index.d.ts",
+  "types": "typings/index.d.ts",
   "files": [
     "dist",
     "index.js",
@@ -22,7 +22,7 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json ./src/*.ts",
     "build": "rollup -c && npm run types",
-    "types": "tsc --declaration && tsc dist/index.d.ts",
+    "types": "tsc --declaration",
     "prebenchmark": "npm run build",
     "benchmark": "node -r reify bench/benchmark.js",
     "start": "npm run test:watch",
