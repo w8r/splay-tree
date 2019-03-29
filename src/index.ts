@@ -74,7 +74,7 @@ function insert (
   i:Key, data:Value,
   t:Node<Key, Value>,
   comparator:Comparator<Key>,
-):Node<Key,Value> {
+) : Node<Key, Value> {
   const node = new Node(i, data);
 
   if (t === null) {
@@ -162,7 +162,7 @@ function printRow (
 export default class Tree<Key=number, Value=any> {
 
   private _comparator:Comparator<Key>;
-  private _root:Node<Key,Value>|null = null;
+  private _root:Node<Key, Value>|null = null;
   private _size:number = 0;
 
   constructor (comparator = DEFAULT_COMPARE) {
@@ -173,7 +173,7 @@ export default class Tree<Key=number, Value=any> {
   /**
    * Inserts a key, allows duplicates
    */
-  insert (key:Key, data?:Value):Node<Key,Value> {
+  public insert (key:Key, data?:Value) : Node<Key, Value> {
     this._size++;
     return this._root = insert(key, data, this._root, this._comparator);
   }
@@ -182,7 +182,7 @@ export default class Tree<Key=number, Value=any> {
   /**
    * Adds a key, if it is not present in the tree
    */
-  add (key:Key, data?:Value):Node<Key,Value> {
+  public add (key:Key, data?:Value) : Node<Key, Value> {
     const node = new Node(key, data);
 
     if (this._root === null) {
@@ -217,7 +217,7 @@ export default class Tree<Key=number, Value=any> {
    * @param  {Key} key
    * @return {Node|null}
    */
-  remove (key:Key):void {
+  public remove (key:Key) : void {
     this._root = this._remove(key, this._root, this._comparator);
   }
 
@@ -225,9 +225,9 @@ export default class Tree<Key=number, Value=any> {
   /**
    * Deletes i from the tree if it's there
    */
-  _remove (
-    i:Key, t:Node<Key,Value>,
-    comparator:Comparator<Key>):Node<Key,Value> {
+  private _remove (
+    i:Key, t:Node<Key, Value>,
+    comparator:Comparator<Key>) : Node<Key, Value> {
     let x;
     if (t === null) return null;
     t = splay(i, t, comparator);
@@ -507,7 +507,7 @@ export default class Tree<Key=number, Value=any> {
   get size () : number { return this._size; }
   get root () : Node<Key, Value>|null { return this._root; }
 
-  toString (printNode:NodePrinter<Key,Value> = (n) => String(n.key)):string {
+  public toString (printNode:NodePrinter<Key, Value> = (n) => String(n.key)) : string {
     const out:string[] = [];
     printRow(this._root, '', true, (v) => out.push(v), printNode);
     return out.join('');
