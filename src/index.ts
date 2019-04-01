@@ -24,7 +24,6 @@ type TreeNodeList<Key, Value> = { head:Node<Key, Value>|null };
  * Simple top down splay, not requiring i to be in the tree t.
  */
 function splay (i:Key, t:Node<Key, Value>|null, comparator:Comparator<Key>) {
-  if (t === null) return t;
   const N = new Node(null, null);
   let l = N;
   let r = N;

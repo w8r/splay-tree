@@ -154,4 +154,17 @@ describe('traversal check', () => {
     });
     assert.deepEqual(arr, tree.keys());
   });
+
+  it ('should support range walking with interruption', () => {
+    const tree = new Tree();
+    for (let i = 0; i < 10; i++) tree.insert(i);
+
+    const arr:number[] = [];
+    tree.range(2,8, (n) => {
+      arr.push(n.key);
+      if (n.key === 5) return true;
+    });
+
+    assert.deepEqual(arr, [2,3,4,5]);
+  });
 });

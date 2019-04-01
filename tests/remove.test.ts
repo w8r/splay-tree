@@ -61,5 +61,18 @@ describe('remove', () => {
 
     const removed = tree.pop();
     assert.deepEqual(removed, { key: 1, data: undefined });
+    assert.isNull(tree.pop());
+  });
+
+  it ('should support clear operation', () => {
+    const tree = new Tree();
+    tree.insert(2);
+    tree.insert(1);
+    tree.remove(2);
+
+    tree.clear();
+
+    assert.isNull(tree.root);
+    assert.equal(tree.size, 0);
   });
 });
