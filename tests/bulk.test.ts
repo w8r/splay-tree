@@ -36,6 +36,24 @@ describe ('bulk-load', () => {
   });
 
 
+  it ('should be able to load less contents into a tree with contents', () => {
+    const t = new Tree();
+    t.load([100, 500, -400, 20, 10], undefined, true);
+
+    t.load([22], undefined, true);
+    assert.deepEqual(t.keys(),  [ -400, 10, 20, 22, 100, 500 ]);
+  });
+
+
+  it ('should be able to load more contents into a tree with less contents', () => {
+    const t = new Tree();
+    t.load([22], undefined, true);
+
+    t.load([100, 500, -400, 20, 10], undefined, true);
+    assert.deepEqual(t.keys(),  [ -400, 10, 20, 22, 100, 500 ]);
+  });
+
+
   it ('should be able to load into a tree with contents (interleave)', () => {
     const t = new Tree();
     t.load(new Array(10).fill(0).map((_, i) => i * 10));

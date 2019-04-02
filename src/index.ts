@@ -23,7 +23,7 @@ type TreeNodeList<Key, Value> = { head:Node<Key, Value>|null };
 /**
  * Simple top down splay, not requiring i to be in the tree t.
  */
-function splay (i:Key, t:Node<Key, Value>|null, comparator:Comparator<Key>): Node<Key, Value> {
+function splay (i:Key, t:Node<Key, Value>|null, comparator:Comparator<Key>) : Node<Key, Value> {
   const N = new Node(null, null);
   let l = N;
   let r = N;
@@ -96,9 +96,9 @@ function insert (
 }
 
 
-function split (key:Key, v:Node<Key, Value>, comparator:Comparator<Key>): {
-  left: Node<Key,Value>|null,
-  right: Node<Key,Value>|null
+function split (key:Key, v:Node<Key, Value>, comparator:Comparator<Key>) : {
+  left:Node<Key, Value>|null,
+  right:Node<Key, Value>|null,
 } {
   let left = null;
   let right = null;
@@ -482,7 +482,7 @@ export default class Tree<Key=number, Value=any> {
   /**
    * Bulk-load items. Both array have to be same size
    */
-  public load (keys:Key[] = [], values:Value[] = [], presort:boolean = false) {
+  public load (keys:Key[], values:Value[] = [], presort:boolean = false) {
     let size = keys.length;
     const comparator = this._comparator;
 
@@ -602,7 +602,7 @@ function sortedListToBST(list:TreeNodeList<Key, Value>, start:number, end:number
 
 function mergeLists<Key, Value> (
   l1:Node<Key, Value>, l2:Node<Key, Value>,
-  compare = DEFAULT_COMPARE) : Node<Key, Value> {
+  compare:Comparator<Key>) : Node<Key, Value> {
   const head:Node<Key, Value> = new Node<Key, Value>(null, null); // dummy
   let p = head;
 
@@ -620,8 +620,11 @@ function mergeLists<Key, Value> (
     p = p.next;
   }
 
-  if (p1 !== null)      p.next = p1;
-  else if (p2 !== null) p.next = p2;
+  if (p1 !== null) {
+    p.next = p1;
+  } else if (p2 !== null) {
+    p.next = p2;
+  }
 
   return head.next;
 }

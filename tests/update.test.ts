@@ -26,7 +26,7 @@ function createTree(values:any[]) {
 
 describe ('update', () => {
 
-  it('split', () => {
+  it ('split', () => {
     let t, split;
 
     t = createTree([1,2,3]);
@@ -34,6 +34,10 @@ describe ('update', () => {
     assert.deepEqual(split.left, null);
     assert.deepEqual(toArray(split.right), [1,2,3]);
 
+    t = createTree([1,2,3]);
+    split = t.split(2.5);
+    assert.deepEqual(toArray(split.left), [1,2]);
+    assert.deepEqual(toArray(split.right), [3]);
 
     t = createTree([1,2,3]);
     split = t.split(2);
@@ -51,7 +55,7 @@ describe ('update', () => {
     assert.deepEqual(toArray(split.right), []);
   });
 
-  it('merge', () => {
+  it ('merge', () => {
     const t = createTree([1,2,3,4,5]);
     t.update(3, 6);
     assert.deepEqual(t.keys(), [1,2,4,5,6]);
@@ -59,5 +63,7 @@ describe ('update', () => {
     assert.deepEqual(t.keys(), [0,1,4,5,6]);
     t.update(0, 7);
     assert.deepEqual(t.keys(), [1,4,5,6,7]);
+    t.update(7, -3);
+    assert.deepEqual(t.keys(), [-3,1,4,5,6]);
   });
 });
