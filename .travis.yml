@@ -6,4 +6,4 @@ scripts:
 install:
   - npm install
 after_success:
-  - codecov
+  - codecov -f coverage/*.json

@@ -1,4 +1,4 @@
-# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree)
+# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree)![deps](https://david-dm.org/w8r/splay-tree/status.svg)
 
 [Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 1000 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks against other trees.
