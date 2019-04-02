@@ -21,6 +21,14 @@ describe('remove', () => {
   });
 
 
+  it ('should ignore a single key which is not there', () => {
+    const tree = new Tree();
+    tree.insert(1);
+    tree.remove(2);
+    assert.equal(tree.size, 1);
+  });
+
+
   it ('should take the right child if the left does not exist', () => {
     const tree = new Tree();
     tree.insert(1);

@@ -9,10 +9,21 @@ describe ('printing', () => {
     const tree = new Tree();
     for (let i = 0; i < 3; i++) tree.insert(i);
 
-    //tree.find(2);
+    tree.find(2);
     assert.equal(tree.toString(), `└── 2
     ├── 1
     │   ├── 0
+`);
+  });
+
+  it ('should print the balanced tree', () => {
+    const tree = new Tree();
+    for (let i = 0; i < 3; i++) tree.insert(i);
+
+    tree.find(1);
+    assert.equal(tree.toString(), `└── 1
+    ├── 0
+    └── 2
 `);
   });
 });

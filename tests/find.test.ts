@@ -41,6 +41,7 @@ describe ('find', () => {
     tree.insert(2, 5);
     tree.insert(3, 6);
 
+    tree.find(2);
     const root = tree.root;
     assert.equal(tree.findStatic(1).data, 4);
     assert.strictEqual(root, tree.root);
@@ -53,7 +54,6 @@ describe ('find', () => {
 
     assert.equal(tree.findStatic(-2).data, 8);
 
-    assert.isNull(tree.find(8));
-    assert.strictEqual(root, tree.root);
+    assert.strictEqual(tree.find(2), tree.root);
   });
 });

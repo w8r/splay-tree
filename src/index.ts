@@ -23,7 +23,7 @@ type TreeNodeList<Key, Value> = { head:Node<Key, Value>|null };
 /**
  * Simple top down splay, not requiring i to be in the tree t.
  */
-function splay (i:Key, t:Node<Key, Value>|null, comparator:Comparator<Key>) {
+function splay (i:Key, t:Node<Key, Value>|null, comparator:Comparator<Key>): Node<Key, Value> {
   const N = new Node(null, null);
   let l = N;
   let r = N;
@@ -96,12 +96,13 @@ function insert (
 }
 
 
-function split (key:Key, v:Value, comparator:Comparator<Key>) {
-  let left;
-  let right;
-  if (v === null) {
-    left = right = null;
-  } else {
+function split (key:Key, v:Node<Key, Value>, comparator:Comparator<Key>): {
+  left: Node<Key,Value>|null,
+  right: Node<Key,Value>|null
+} {
+  let left = null;
+  let right = null;
+  if (v) {
     v = splay(key, v, comparator);
 
     const cmp = comparator(v.key, key);
