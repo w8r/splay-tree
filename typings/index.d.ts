@@ -25,7 +25,7 @@ export default class Tree<Key = number, Value = any> {
     /**
      * Deletes i from the tree if it's there
      */
-    _remove(i: Key, t: Node<Key, Value>, comparator: Comparator<Key>): Node<Key, Value>;
+    private _remove;
     /**
      * Removes and returns the node with smallest key
      */
@@ -67,15 +67,15 @@ export default class Tree<Key = number, Value = any> {
     /**
      * Bulk-load items. Both array have to be same size
      */
-    load(keys?: Key[], values?: Value[], presort?: boolean): this;
+    load(keys: Key[], values?: Value[], presort?: boolean): this;
     isEmpty(): boolean;
     readonly size: number;
     readonly root: Node<Key, Value> | null;
     toString(printNode?: NodePrinter<Key, Value>): string;
     update(key: Key, newKey: Key, newData?: Value): void;
     split(key: Key): {
-        left: any;
-        right: any;
+        left: Node<any, any>;
+        right: Node<any, any>;
     };
 }
 export {};
