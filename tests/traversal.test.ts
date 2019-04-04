@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../src/index';
 
 describe('traversal check', () => {
 
@@ -77,6 +77,29 @@ describe('traversal check', () => {
     assert.isNull(min);
   });
 
+  it ('bidirectional stepping', () => {
+    const tree = new Tree();
+    const keys = [
+      49153, 49154, 49156, 49157, 49158, 49159, 49160, 49161,
+      49163, 49165, 49191, 49199, 49201, 49202, 49203, 49204,
+      49206, 49207, 49208, 49209, 49210, 49212
+    ];
+
+    tree.load(keys);
+
+    let min = tree.minNode();
+
+    keys.forEach((key, i) => {
+      assert.equal(min.key, key);
+      if (i !== 0) {
+        assert.equal(tree.next(tree.prev(min)).key, key);
+      }
+      min = tree.next(min);
+    });
+
+    assert.isNull(min);
+  });
+
   it ('should find successor and predecessor for 2-nodes tree', () => {
     const tree = new Tree();
     tree.insert(5); tree.insert(10);
@@ -100,7 +123,6 @@ describe('traversal check', () => {
 
     assert.isNull(tree.at(10));
     assert.isNull(tree.at(-1));
-    assert.isNull(tree.at('a'));
   });
 
 
@@ -108,7 +130,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(3, 8, (n) => {
       arr.push(n.key);
     });
@@ -119,7 +141,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(-3,5, (n) => {
       arr.push(n.key);
     });
@@ -131,7 +153,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(3,15, (n) => {
       arr.push(n.key);
     });
@@ -143,7 +165,7 @@ describe('traversal check', () => {
     const tree = new Tree();
     for (let i = 0; i < 10; i++) tree.insert(i);
 
-    const arr = [];
+    const arr:number[] = [];
     tree.range(10, 20, (n) => {
       arr.push(n.key);
     });
@@ -154,5 +176,18 @@ describe('traversal check', () => {
       arr.push(n.key);
     });
     assert.deepEqual(arr, tree.keys());
+  });
+
+  it ('should support range walking with interruption', () => {
+    const tree = new Tree();
+    for (let i = 0; i < 10; i++) tree.insert(i);
+
+    const arr:number[] = [];
+    tree.range(2,8, (n) => {
+      arr.push(n.key);
+      if (n.key === 5) return true;
+    });
+
+    assert.deepEqual(arr, [2,3,4,5]);
   });
 });

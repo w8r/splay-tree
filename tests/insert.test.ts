@@ -1,12 +1,12 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../src/index';
 
 describe ('insert', () => {
 
   it ('should return the size of the tree', () => {
-    const tree = new Tree();
+    const tree = new Tree<number, any>();
     tree.insert(1);
     tree.insert(2);
     tree.insert(3);

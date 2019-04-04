@@ -1,12 +1,12 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../src/index';
 
 describe ('empty check', () => {
 
   it ('should return whether the tree is empty', () => {
-    const tree = new Tree();
+    const tree = new Tree<number, any>();
 
     assert.isTrue(tree.isEmpty());
     tree.insert(1);

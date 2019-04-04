@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../src/index';
 
 
 describe ('bulk-load', () => {
@@ -33,6 +33,24 @@ describe ('bulk-load', () => {
 
     t.load([100,500, -400, 20, 10], undefined, true);
     assert.deepEqual(t.keys(), [ -400, -10, 0, 10, 12, 20, 22, 56, 100, 500 ]);
+  });
+
+
+  it ('should be able to load less contents into a tree with contents', () => {
+    const t = new Tree();
+    t.load([100, 500, -400, 20, 10], undefined, true);
+
+    t.load([22], undefined, true);
+    assert.deepEqual(t.keys(),  [ -400, 10, 20, 22, 100, 500 ]);
+  });
+
+
+  it ('should be able to load more contents into a tree with less contents', () => {
+    const t = new Tree();
+    t.load([22], undefined, true);
+
+    t.load([100, 500, -400, 20, 10], undefined, true);
+    assert.deepEqual(t.keys(),  [ -400, 10, 20, 22, 100, 500 ]);
   });
 
 

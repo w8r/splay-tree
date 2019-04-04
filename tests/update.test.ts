@@ -1,14 +1,15 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../src/index';
+import Node from '../src/node';
 
-function count(tree, size = 0) {
+function count(tree:Node<number,any>, size = 0) {
   if (tree) size += count(tree.left, size) + count(tree.right, size);
   return size;
 }
 
-function toArray(tree, arr = []) {
+function toArray(tree:Node<number,any>, arr:number[] = []) {
   if (tree) {
     toArray(tree.left, arr);
     arr.push(tree.key);
@@ -17,7 +18,7 @@ function toArray(tree, arr = []) {
   return arr;
 }
 
-function createTree(values) {
+function createTree(values:any[]) {
   const t = new Tree();
   values.forEach((v) => t.insert(v));
   return t;
@@ -25,7 +26,7 @@ function createTree(values) {
 
 describe ('update', () => {
 
-  it('split', () => {
+  it ('split', () => {
     let t, split;
 
     t = createTree([1,2,3]);
@@ -33,6 +34,10 @@ describe ('update', () => {
     assert.deepEqual(split.left, null);
     assert.deepEqual(toArray(split.right), [1,2,3]);
 
+    t = createTree([1,2,3]);
+    split = t.split(2.5);
+    assert.deepEqual(toArray(split.left), [1,2]);
+    assert.deepEqual(toArray(split.right), [3]);
 
     t = createTree([1,2,3]);
     split = t.split(2);
@@ -50,7 +55,7 @@ describe ('update', () => {
     assert.deepEqual(toArray(split.right), []);
   });
 
-  it('merge', () => {
+  it ('merge', () => {
     const t = createTree([1,2,3,4,5]);
     t.update(3, 6);
     assert.deepEqual(t.keys(), [1,2,4,5,6]);
@@ -58,5 +63,7 @@ describe ('update', () => {
     assert.deepEqual(t.keys(), [0,1,4,5,6]);
     t.update(0, 7);
     assert.deepEqual(t.keys(), [1,4,5,6,7]);
+    t.update(7, -3);
+    assert.deepEqual(t.keys(), [-3,1,4,5,6]);
   });
 });

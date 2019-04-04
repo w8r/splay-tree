@@ -1,4 +1,4 @@
-# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree)
+# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree) ![deps](https://david-dm.org/w8r/splay-tree/status.svg) [![codecov](https://codecov.io/gh/w8r/splay-tree/branch/master/graph/badge.svg)](https://codecov.io/gh/w8r/splay-tree)
 
 [Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 1000 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks against other trees.
@@ -49,8 +49,7 @@ Or use the compiled version 'dist/splay.js'.
 * `new SplayTree([comparator])`, where `comparator` is optional comparison function
 * `tree.insert(key:any, [data:any]):Node` - Insert item, allow duplicate keys
 * `tree.add(key:any, [data:any]):Node` - Insert item if it is not present
-* `tree.remove(key:any):Boolean` - Remove item
-* `tree.removeNode(Node:any)|Boolean` - Remove node
+* `tree.remove(key:any)` - Remove item
 * `tree.find(key):Node|Null` - Return node by its key
 * `tree.findStatic(key):Node|Null` - Return node by its key (doesn't re-balance the tree)
 * `tree.at(index:Number):Node|Null` - Return node by its index in sorted order of keys
@@ -202,7 +201,7 @@ npm run build
 
 The MIT License (MIT)
 
-Copyright (c) 2018 Alexander Milevski <info@w8r.name>
+Copyright (c) 2019 Alexander Milevski <info@w8r.name>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

@@ -3,3 +3,8 @@ node_modules
 npm-debug.log
 tests/types.js
 .reify-cache
+.rpt2_cache
+dist
+coverage
+.nyc_output/
+typings

@@ -1,48 +1,53 @@
 {
   "name": "splaytree",
-  "version": "2.0.3",
+  "version": "3.0.0",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "main": "dist/splay.js",
-  "jsnext:main": "index",
-  "module": "index",
-  "types": "index.d.ts",
+  "module": "dist/splay.esm.js",
+  "types": "typings/index.d.ts",
   "files": [
-    "dist",
-    "index.js",
-    "index.d.ts"
+    "dist", "typings", "src"
   ],
+  "directories": {
+    "test": "test",
+    "typings": "typings"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/w8r/splay-tree.git"
   },
   "scripts": {
-    "prebuild": "npm run lint",
-    "lint": "eslint index.js",
+    "lint": "tslint --project tsconfig.json ./src/*.ts",
     "build": "rollup -c && npm run types",
-    "types": "tsc index.d.ts tests/types.ts",
+    "types": "tsc --declaration --emitDeclarationOnly",
     "prebenchmark": "npm run build",
     "benchmark": "node -r reify bench/benchmark.js",
     "start": "npm run test:watch",
     "test:watch": "nodemon --watch index.js --watch tests --exec 'npm test'",
-    "test": "mocha -r reify tests/**/*.test.js",
-    "prepublishOnly": "npm run build && npm test"
+    "test": "nyc mocha tests/**/*.test.ts",
+    "posttest": "nyc report --reporter=json",
+    "prepublishOnly": "npm run build && npm test",
+    "clean": "rm -rf dist coverage .nyc"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.2",
     "avl": "^1.4.4",
     "benchmark": "^2.1.4",
     "bintrees": "^1.0.2",
-    "chai": "^4.1.2",
-    "eslint": "^5.5.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0",
-    "mocha": "^5.2.0",
-    "nodemon": "^1.18.4",
-    "reify": "^0.17.3",
-    "rollup": "^0.65.2",
-    "rollup-plugin-buble": "^0.19.2",
-    "typescript": "^3.0.3"
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "nodemon": "^1.17.5",
+    "nyc": "^13.3.0",
+    "reify": "*",
+    "rollup": "*",
+    "rollup-plugin-typescript2": "*",
+    "ts-node": "^6.1.1",
+    "tslib": "^1.9.3",
+    "tslint": "^5.14.0",
+    "typescript": "^2.9.2"
   },
   "keywords": [
     "binary-tree",
@@ -51,5 +56,30 @@
     "splay",
     "balanced-search-tree"
   ],
+  "mocha": {
+    "require": [
+      "ts-node/register"
+    ]
+  },
+  "nyc": {
+    "include": [
+      "src/*.ts"
+    ],
+    "exclude": [
+      "tests/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  },
   "dependencies": {}
 }

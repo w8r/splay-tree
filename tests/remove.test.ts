@@ -1,7 +1,7 @@
 import { describe, it } from 'mocha';
 import { assert }       from 'chai';
 
-import Tree from '../index';
+import Tree from '../src/index';
 
 
 describe('remove', () => {
@@ -21,12 +21,20 @@ describe('remove', () => {
   });
 
 
+  it ('should ignore a single key which is not there', () => {
+    const tree = new Tree();
+    tree.insert(1);
+    tree.remove(2);
+    assert.equal(tree.size, 1);
+  });
+
+
   it ('should take the right child if the left does not exist', () => {
     const tree = new Tree();
     tree.insert(1);
     tree.insert(2);
     tree.remove(1);
-    assert.equal(tree._root.key, 2);
+    assert.equal(tree.root.key, 2);
   });
 
 
@@ -35,7 +43,7 @@ describe('remove', () => {
     tree.insert(2);
     tree.insert(1);
     tree.remove(2);
-    assert.equal(tree._root.key, 1);
+    assert.equal(tree.root.key, 1);
   });
 
 
@@ -61,5 +69,18 @@ describe('remove', () => {
 
     const removed = tree.pop();
     assert.deepEqual(removed, { key: 1, data: undefined });
+    assert.isNull(tree.pop());
+  });
+
+  it ('should support clear operation', () => {
+    const tree = new Tree();
+    tree.insert(2);
+    tree.insert(1);
+    tree.remove(2);
+
+    tree.clear();
+
+    assert.isNull(tree.root);
+    assert.equal(tree.size, 0);
   });
 });

@@ -1,8 +1,10 @@
 
-import buble from 'rollup-plugin-buble';
+import typescript from 'rollup-plugin-typescript2';
 
-import { 
-  version, author, 
+import {
+  version, author,
+  module as esmBundle,
+  main as umdBundle,
   name as moduleName, license, description
 } from './package.json';
 
@@ -20,20 +22,25 @@ const banner = `\
 const name = 'SplayTree';
 
 export default [{
-  input:     'index.js',
+  input: './src/index.ts',
   output: {
     name, banner,
     format: 'es',
-    file: 'dist/splay.es6.js',
+    file: esmBundle,
     sourcemap: true
-  }
+  },
+  plugins: [typescript({ outDir: "dist" })]
 }, {
-  input:     'index.js',
+  input: './src/index.ts',
   output: {
     name, banner,
     format: 'umd',
-    file: 'dist/splay.js',
+    file: umdBundle,
     sourcemap: true
   },
-  plugins: [buble()]
+  plugins: [typescript({
+    tsconfigOverride: {
+      compilerOptions: { outDir: "dist", target: 'es5' }
+    }
+  })]
 }];
