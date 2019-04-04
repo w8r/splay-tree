@@ -1,4 +1,4 @@
-# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree)![deps](https://david-dm.org/w8r/splay-tree/status.svg)
+# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree) ![deps](https://david-dm.org/w8r/splay-tree/status.svg)
 
 [Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 1000 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks against other trees.
@@ -201,7 +201,7 @@ npm run build
 
 The MIT License (MIT)
 
-Copyright (c) 2018 Alexander Milevski <info@w8r.name>
+Copyright (c) 2019 Alexander Milevski <info@w8r.name>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
