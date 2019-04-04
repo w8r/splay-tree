@@ -8,12 +8,11 @@
   "module": "dist/splay.esm.js",
   "types": "typings/index.d.ts",
   "files": [
-    "dist",
-    "index.js",
-    "index.d.ts"
+    "dist", "typings", "src"
   ],
   "directories": {
-    "test": "test"
+    "test": "test",
+    "typings": "typings"
   },
   "repository": {
     "type": "git",
@@ -22,7 +21,7 @@
   "scripts": {
     "lint": "tslint --project tsconfig.json ./src/*.ts",
     "build": "rollup -c && npm run types",
-    "types": "tsc --declaration",
+    "types": "tsc --declaration --emitDeclarationOnly",
     "prebenchmark": "npm run build",
     "benchmark": "node -r reify bench/benchmark.js",
     "start": "npm run test:watch",
@@ -30,7 +29,7 @@
     "test": "nyc mocha tests/**/*.test.ts",
     "posttest": "nyc report --reporter=json",
     "prepublishOnly": "npm run build && npm test",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist coverage .nyc"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",

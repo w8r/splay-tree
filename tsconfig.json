@@ -7,7 +7,6 @@
     "noEmitOnError": true,
     "importHelpers": true,
     "lib": ["es5", "es6", "dom"],
-    "outDir": "dist",
     "target": "es6",
     "moduleResolution": "node"
   },
