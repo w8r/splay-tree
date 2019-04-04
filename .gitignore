@@ -7,3 +7,4 @@ tests/types.js
 dist
 coverage
 .nyc_output/
+typings
