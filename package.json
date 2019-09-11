@@ -1,6 +1,6 @@
 {
   "name": "splaytree",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
@@ -8,7 +8,9 @@
   "module": "dist/splay.esm.js",
   "types": "typings/index.d.ts",
   "files": [
-    "dist", "typings", "src"
+    "dist",
+    "typings",
+    "src"
   ],
   "directories": {
     "test": "test",
@@ -38,12 +40,12 @@
     "benchmark": "^2.1.4",
     "bintrees": "^1.0.2",
     "chai": "^4.2.0",
-    "mocha": "^6.0.2",
-    "nodemon": "^1.17.5",
-    "nyc": "^13.3.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.2",
+    "nyc": "^14.1.1",
     "reify": "*",
     "rollup": "*",
-    "rollup-plugin-typescript2": "*",
+    "rollup-plugin-typescript2": "^0.24.1",
     "ts-node": "^6.1.1",
     "tslib": "^1.9.3",
     "tslint": "^5.14.0",
