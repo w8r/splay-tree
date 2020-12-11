@@ -29,7 +29,7 @@ export default [{
     file: esmBundle,
     sourcemap: true
   },
-  plugins: [typescript({ outDir: "dist" })]
+  plugins: [typescript({ outDir: "dist", module: 'es2015' })]
 }, {
   input: './src/index.ts',
   output: {
@@ -40,7 +40,7 @@ export default [{
   },
   plugins: [typescript({
     tsconfigOverride: {
-      compilerOptions: { outDir: "dist", target: 'es5' }
+      compilerOptions: { outDir: "dist" }
     }
   })]
 }];
