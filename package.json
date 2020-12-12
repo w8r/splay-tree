@@ -1,10 +1,12 @@
 {
   "name": "splaytree",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "main": "dist/splay.js",
+  "browser": "dist/splay.js",
+  "unpkg": "dist/splay.js",
   "module": "dist/splay.esm.js",
   "types": "typings/index.d.ts",
   "files": [
