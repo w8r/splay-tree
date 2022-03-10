@@ -381,13 +381,13 @@ export default class Tree<Key=number, Value=any> {
   }
 
 
-  public minNode(t = this._root) : Node<Key, Value> {
+  public minNode(t = this._root) : Node<Key, Value> | null {
     if (t) while (t.left) t = t.left;
     return t;
   }
 
 
-  public maxNode(t = this._root) : Node<Key, Value> {
+  public maxNode(t = this._root) : Node<Key, Value> | null {
     if (t) while (t.right) t = t.right;
     return t;
   }
@@ -528,6 +528,14 @@ export default class Tree<Key=number, Value=any> {
 
   public split(key:Key) {
     return split(key, this._root, this._comparator);
+  }
+
+  *[Symbol.iterator]() {
+    let n = this.minNode();
+    while (n) {
+      yield n;
+      n = this.next(n);
+    }
   }
 }
 
