@@ -33,7 +33,8 @@
     "test": "nyc mocha tests/**/*.test.ts",
     "posttest": "nyc report --reporter=json",
     "prepublishOnly": "npm run build && npm test",
-    "clean": "rm -rf dist coverage .nyc"
+    "clean": "rm -rf dist coverage .nyc",
+    "coverage": "codecov -f coverage/*.json"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",
@@ -42,6 +43,7 @@
     "benchmark": "^2.1.4",
     "bintrees": "^1.0.2",
     "chai": "^4.2.0",
+    "codecov": "^3.8.3",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.2",
     "nyc": "^14.1.1",
