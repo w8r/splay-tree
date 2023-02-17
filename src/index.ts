@@ -532,7 +532,7 @@ export default class Tree<Key=number, Value=any> {
 
   *[Symbol.iterator]() {
     let current = this._root;
-    const Q = [];  /* Initialize stack s */
+    const Q: Node<Key, Value>[] = [];  /* Initialize stack s */
     let done = false;
 
     while (!done) {
@@ -541,14 +541,13 @@ export default class Tree<Key=number, Value=any> {
         current = current.left;
       } else {
         if (Q.length !== 0) {
-          current = Q.pop();
+          current = Q.pop()!;
           yield current;
 
           current = current.right;
         } else done = true;
       }
     }
-    return this;
   }
 }
 
