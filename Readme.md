@@ -1,25 +1,24 @@
-# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![build](https://travis-ci.org/w8r/splay-tree.svg?branch=master)](https://travis-ci.org/w8r/splay-tree) ![deps](https://david-dm.org/w8r/splay-tree/status.svg) [![codecov](https://codecov.io/gh/w8r/splay-tree/branch/master/graph/badge.svg)](https://codecov.io/gh/w8r/splay-tree)
+# Fast splay tree [![npm version](https://badge.fury.io/js/splaytree.svg)](https://badge.fury.io/js/splaytree) [![codecov](https://codecov.io/gh/w8r/splay-tree/branch/master/graph/badge.svg)](https://codecov.io/gh/w8r/splay-tree)
 
 [Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 1000 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks against other trees.
 
-
 This tree is based on **top-down** splaying algorithm by D.Sleator. It supports
- - splitting, merging
- - updating of the keys
- - bulk loading of the items into an empty or non-empty tree
- - insertion with duplicates or no duplicates
- - lookup without splaying
+
+- splitting, merging
+- updating of the keys
+- bulk loading of the items into an empty or non-empty tree
+- insertion with duplicates or no duplicates
+- lookup without splaying
 
 ![Splay-tree](https://i.stack.imgur.com/CNSAZ.png)
 
-| Operation     | Average       | Worst case             |
-| ------------- | ------------- | ---------------------- |
-| Space         | **O(n)**      | **O(n)**               |
-| Search        | **O(log n)**  | **amortized O(log n)** |
-| Insert        | **O(log n)**  | **amortized O(log n)** |
-| Delete        | **O(log n)**  | **amortized O(log n)** |
-
+| Operation | Average      | Worst case             |
+| --------- | ------------ | ---------------------- |
+| Space     | **O(n)**     | **O(n)**               |
+| Search    | **O(log n)** | **amortized O(log n)** |
+| Insert    | **O(log n)** | **amortized O(log n)** |
+| Delete    | **O(log n)** | **amortized O(log n)** |
 
 ## Install
 
@@ -28,11 +27,12 @@ npm i -S splaytree
 ```
 
 ```js
-import SplayTree from 'splaytree';
+import SplayTree from "splaytree";
 const tree = new SplayTree();
 ```
 
 Or get it from CDN
+
 ```html
 <script src="https://unpkg.com/splaytree"></script>
 <script>
@@ -40,56 +40,58 @@ Or get it from CDN
   ...
 </script>
 ```
+
 Or use the compiled version 'dist/splay.js'.
 
 [Try it in your browser](https://npm.runkit.com/splaytree)
 
 ## API
 
-* `new SplayTree([comparator])`, where `comparator` is optional comparison function
-* `tree.insert(key:any, [data:any]):Node` - Insert item, allow duplicate keys
-* `tree.add(key:any, [data:any]):Node` - Insert item if it is not present
-* `tree.remove(key:any)` - Remove item
-* `tree.find(key):Node|Null` - Return node by its key
-* `tree.findStatic(key):Node|Null` - Return node by its key (doesn't re-balance the tree)
-* `tree.at(index:Number):Node|Null` - Return node by its index in sorted order of keys
-* `tree.contains(key):Boolean` - Whether a node with the given key is in the tree
-* `tree.forEach(function(node) {...}):Tree` In-order traversal
-* `tree.keys():Array<key>` - Returns the array of keys in order
-* `tree.values():Array<*>` - Returns the array of data fields in order
-* `tree.range(lo, high, function(node) {} [, context]):Tree` - Walks the range of keys in order. Stops, if the visitor function returns a non-zero value.
-* `tree.pop():Node` - Removes smallest node
-* `tree.min():key` - Returns min key
-* `tree.max():key` - Returns max key
-* `tree.minNode():Node` - Returns the node with smallest key
-* `tree.maxNode():Node` - Returns the node with highest key
-* `tree.prev(node):Node` - Predecessor node
-* `tree.next(node):Node` - Successor node
-* `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. It expects values and keys to be sorted, but if `presort` is `true`, it will sort keys and values using the comparator(in-place, your arrays are going to be altered).
+- `new SplayTree([comparator])`, where `comparator` is optional comparison function
+- `tree.insert(key:any, [data:any]):Node` - Insert item, allow duplicate keys
+- `tree.add(key:any, [data:any]):Node` - Insert item if it is not present
+- `tree.remove(key:any)` - Remove item
+- `tree.find(key):Node|Null` - Return node by its key
+- `tree.findStatic(key):Node|Null` - Return node by its key (doesn't re-balance the tree)
+- `tree.at(index:Number):Node|Null` - Return node by its index in sorted order of keys
+- `tree.contains(key):Boolean` - Whether a node with the given key is in the tree
+- `tree.forEach(function(node) {...}):Tree` In-order traversal
+- `tree.keys():Array<key>` - Returns the array of keys in order
+- `tree.values():Array<*>` - Returns the array of data fields in order
+- `tree.range(lo, high, function(node) {} [, context]):Tree` - Walks the range of keys in order. Stops, if the visitor function returns a non-zero value.
+- `tree.pop():Node` - Removes smallest node
+- `tree.min():key` - Returns min key
+- `tree.max():key` - Returns max key
+- `tree.minNode():Node` - Returns the node with smallest key
+- `tree.maxNode():Node` - Returns the node with highest key
+- `tree.prev(node):Node` - Predecessor node
+- `tree.next(node):Node` - Successor node
+- `tree.load(keys:Array<*>, [values:Array<*>][,presort=false]):Tree` - Bulk-load items. It expects values and keys to be sorted, but if `presort` is `true`, it will sort keys and values using the comparator(in-place, your arrays are going to be altered).
 
 **Comparator**
 
 `function(a:key,b:key):Number` - Comparator function between two keys, it returns
- * `0` if the keys are equal
- * `<0` if `a < b`
- * `>0` if `a > b`
 
- The comparator function is extremely important, in case of errors you might end
- up with a wrongly constructed tree or would not be able to retrieve your items.
- It is crucial to test the return values of your `comparator(a,b)` and `comparator(b,a)`
- to make sure it's working correctly, otherwise you may have bugs that are very
- unpredictable and hard to catch.
+- `0` if the keys are equal
+- `<0` if `a < b`
+- `>0` if `a > b`
 
- **Duplicate keys**
+The comparator function is extremely important, in case of errors you might end
+up with a wrongly constructed tree or would not be able to retrieve your items.
+It is crucial to test the return values of your `comparator(a,b)` and `comparator(b,a)`
+to make sure it's working correctly, otherwise you may have bugs that are very
+unpredictable and hard to catch.
 
-* `insert()` method allows duplicate keys. This can be useful in certain applications (example: overlapping
- points in 2D).
-* `add()` method will not allow duplicate keys - if key is already present in the tree, no new node is created
+**Duplicate keys**
+
+- `insert()` method allows duplicate keys. This can be useful in certain applications (example: overlapping
+  points in 2D).
+- `add()` method will not allow duplicate keys - if key is already present in the tree, no new node is created
 
 ## Example
 
 ```js
-import Tree from 'splaytree';
+import Tree from "splaytree";
 
 const t = new Tree();
 t.insert(5);
@@ -99,18 +101,18 @@ t.insert(33);
 t.insert(2);
 
 console.log(t.keys()); // [-10, 0, 2, 5, 33]
-console.log(t.size);   // 5
-console.log(t.min());  // -10
-console.log(t.max());  // -33
+console.log(t.size); // 5
+console.log(t.min()); // -10
+console.log(t.max()); // -33
 
 t.remove(0);
-console.log(t.size);   // 4
+console.log(t.size); // 4
 ```
 
 **Custom comparator (reverse sort)**
 
 ```js
-import Tree from 'splaytree';
+import Tree from "splaytree";
 
 const t = new Tree((a, b) => b - a);
 t.insert(5);
@@ -125,11 +127,11 @@ console.log(t.keys()); // [33, 5, 2, 0, -10]
 **Bulk insert**
 
 ```js
-import Tree from 'splaytree';
+import Tree from "splaytree";
 
 const t = new Tree();
-t.load([3,2,-10,20], ['C', 'B', 'A', 'D']);
-console.log(t.keys());   // [-10, 2, 3, 20]
+t.load([3, 2, -10, 20], ["C", "B", "A", "D"]);
+console.log(t.keys()); // [-10, 2, 3, 20]
 console.log(t.values()); // ['A', 'B', 'C', 'D']
 ```
 
@@ -195,7 +197,6 @@ npm run build
 ## TODO
 
 - [ ] try and add parent fields for efficient `.prev()` and `.next()`, or iterators
-
 
 ## License
 
