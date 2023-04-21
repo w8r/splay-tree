@@ -531,10 +531,22 @@ export default class Tree<Key=number, Value=any> {
   }
 
   *[Symbol.iterator]() {
-    let n = this.minNode();
-    while (n) {
-      yield n;
-      n = this.next(n);
+    let current = this._root;
+    const Q: Node<Key, Value>[] = [];  /* Initialize stack s */
+    let done = false;
+
+    while (!done) {
+      if (current !==  null) {
+        Q.push(current);
+        current = current.left;
+      } else {
+        if (Q.length !== 0) {
+          current = Q.pop()!;
+          yield current;
+
+          current = current.right;
+        } else done = true;
+      }
     }
   }
 }
