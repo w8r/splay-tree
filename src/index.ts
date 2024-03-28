@@ -548,9 +548,9 @@ export default class Tree<Key=number, Value=any> {
     return split(key, this._root, this._comparator);
   }
 
-  public *[Symbol.iterator]() {
+  *[Symbol.iterator]() {
     let current = this._root;
-    const Q:Node<Key, Value>[] = [];  /* Initialize stack s */
+    const Q: Node<Key, Value>[] = [];  /* Initialize stack s */
     let done = false;
 
     while (!done) {
