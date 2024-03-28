@@ -101,7 +101,8 @@ describe ('find', () => {
     assert.equal(tree.findAtOrNeighborStatic(10).data, 40);
     assert.strictEqual(root, tree.root);
 
-    assert.equal(tree.findAtOrNeighborStatic(15).data === 40 || tree.findAtOrNeighborStatic(15).data === 50, true);
+    const result_around_15 = tree.findAtOrNeighborStatic(15);
+    assert.equal(result_around_15.data === 40 || result_around_15.data === 50, true);
     assert.strictEqual(root, tree.root);
 
     assert.equal(tree.findAtOrNeighborStatic(20).data, 50);
