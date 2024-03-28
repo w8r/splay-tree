@@ -260,29 +260,47 @@ export default class Tree<Key=number, Value=any> {
     return null;
   }
 
+  public findAtOrNeighborStatic (key:Key) : Node<Key, Value>|null {
+    let current = this._root;
+    const compare = this._comparator;
+    let next:Node<Key, Value>;
+    while (current) {
+      const cmp = compare(key, current.key);
+      if (cmp === 0)  return current;
+      else if (cmp < 0) next = current.left;
+      else next = current.right;
+
+      if (next == undefined) return current;
+
+      current = next;
+    }
+  }
+
 
   /**
    * Find without splaying
    */
   public findStatic (key:Key) : Node<Key, Value>|null {
-    let current   = this._root;
-    const compare = this._comparator;
-    while (current) {
-      const cmp = compare(key, current.key);
-      if (cmp === 0)    return current;
-      else if (cmp < 0) current = current.left;
-      else              current = current.right;
+    const result_candidate = this.findAtOrNeighborStatic(key);
+    if (result_candidate && this._comparator(result_candidate.key, key) === 0) {
+      return result_candidate;
     }
     return null;
   }
 
-
-  public find (key:Key) : Node<Key, Value>|null {
+  public findAtOrNeighbor (key:Key) : Node<Key, Value>|null {
     if (this._root) {
       this._root = splay(key, this._root, this._comparator);
-      if (this._comparator(key, this._root.key) !== 0) return null;
     }
     return this._root;
+  }
+
+  public find (key:Key) : Node<Key, Value>|null {
+    const result_candidate = this.findAtOrNeighbor(key);
+    if (result_candidate && this._comparator(result_candidate.key, key) === 0) {
+      return result_candidate;
+    }
+    return null;
   }
 
 
@@ -530,9 +548,9 @@ export default class Tree<Key=number, Value=any> {
     return split(key, this._root, this._comparator);
   }
 
-  *[Symbol.iterator]() {
+  public *[Symbol.iterator]() {
     let current = this._root;
-    const Q: Node<Key, Value>[] = [];  /* Initialize stack s */
+    const Q:Node<Key, Value>[] = [];  /* Initialize stack s */
     let done = false;
 
     while (!done) {
