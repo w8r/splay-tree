@@ -1,6 +1,6 @@
 {
   "name": "splaytree",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
@@ -8,7 +8,7 @@
   "main": "dist/splaytree.umd.cjs",
   "browser": "dist/splaytree.umd.cjs",
   "unpkg": "dist/splaytree.umd.cjs",
-  "module": "dist/splaytree.mjs",
+  "module": "dist/splaytree.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "dist",
@@ -52,7 +52,7 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/splaytree.mjs",
+      "import": "./dist/splaytree.js",
       "require": "./dist/splaytree.umd.cjs"
     }
   },
