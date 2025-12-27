@@ -1,23 +1,21 @@
 {
   "name": "splaytree",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "type": "module",
-  "main": "dist/splay.js",
+  "main": "dist/splaytree.umd.js",
   "browser": "dist/splaytree.umd.js",
   "unpkg": "dist/splaytree.umd.js",
   "module": "dist/splaytree.mjs",
   "types": "dist/types/index.d.ts",
   "files": [
     "dist",
-    "typings",
     "src"
   ],
   "directories": {
-    "test": "tests",
-    "typings": "typings"
+    "test": "tests"
   },
   "repository": {
     "type": "git",
@@ -29,12 +27,13 @@
     "test": "vitest",
     "test:watch": "vitest watch",
     "bench": "vitest bench",
-    "coverage": "vitest run --coverage && codecov -f coverage/coverage-final.json",
+    "coverage": "vitest run --coverage",
     "lint": "oxlint src tests",
     "prepublishOnly": "npm run build && npm test",
     "clean": "rm -rf dist coverage .nyc"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "4.0.16",
     "avl": "2.0.0",
     "bintrees": "1.0.2",
     "oxlint": "1.35.0",
