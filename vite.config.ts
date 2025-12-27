@@ -14,7 +14,12 @@ const banner = `/**
 `;
 
 export default defineConfig({
-  plugins: [dts({ rollupTypes: true, entryRoot: "src" })],
+  plugins: [
+    dts({
+      include: ["src/**/*"],
+      exclude: ["tests/**/*", "demo/**/*", "bench/**/*"],
+    }),
+  ],
   build: {
     lib: {
       entry: "src/index.ts",

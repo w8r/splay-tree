@@ -4,6 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "lib": ["ES2020", "DOM"],
+    "declarationDir": "./dist/types/",
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true

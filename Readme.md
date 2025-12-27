@@ -41,7 +41,7 @@ Or get it from CDN
 </script>
 ```
 
-Or use the compiled version 'dist/splay.js'.
+Or use the compiled version 'dist/splaytree.umd.js'.
 
 [Try it in your browser](https://npm.runkit.com/splaytree)
 
