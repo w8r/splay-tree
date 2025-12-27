@@ -1,13 +1,13 @@
 {
   "name": "splaytree",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "type": "module",
-  "main": "dist/splaytree.umd.js",
-  "browser": "dist/splaytree.umd.js",
-  "unpkg": "dist/splaytree.umd.js",
+  "main": "dist/splaytree.umd.cjs",
+  "browser": "dist/splaytree.umd.cjs",
+  "unpkg": "dist/splaytree.umd.cjs",
   "module": "dist/splaytree.mjs",
   "types": "dist/types/index.d.ts",
   "files": [
@@ -22,7 +22,7 @@
     "url": "https://github.com/w8r/splay-tree.git"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && npm run types",
     "types": "tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
     "test": "vitest",
     "test:watch": "vitest watch",
@@ -53,7 +53,7 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/splaytree.mjs",
-      "require": "./dist/splaytree.umd.js"
+      "require": "./dist/splaytree.umd.cjs"
     }
   },
   "engines": {
