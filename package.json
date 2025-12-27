@@ -1,59 +1,46 @@
 {
   "name": "splaytree",
-  "version": "3.1.2",
+  "version": "3.2.0",
   "author": "Alexander Milevski <info@w8r.name>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
-  "main": "dist/splay.js",
-  "browser": "dist/splay.js",
-  "unpkg": "dist/splay.js",
-  "module": "dist/splay.esm.js",
-  "types": "typings/index.d.ts",
+  "type": "module",
+  "main": "dist/splaytree.umd.js",
+  "browser": "dist/splaytree.umd.js",
+  "unpkg": "dist/splaytree.umd.js",
+  "module": "dist/splaytree.mjs",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist",
-    "typings",
     "src"
   ],
   "directories": {
-    "test": "test",
-    "typings": "typings"
+    "test": "tests"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/w8r/splay-tree.git"
   },
   "scripts": {
-    "lint": "tslint --project tsconfig.json ./src/*.ts",
-    "build": "rollup -c && npm run types",
-    "types": "tsc --declaration --emitDeclarationOnly",
-    "prebenchmark": "npm run build",
-    "benchmark": "node -r reify bench/benchmark.js",
-    "start": "npm run test:watch",
-    "test:watch": "nodemon --watch index.js --watch tests --exec 'npm test'",
-    "test": "nyc mocha tests/**/*.test.ts",
-    "posttest": "nyc report --reporter=json",
+    "build": "vite build",
+    "types": "tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "bench": "vitest bench",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint src tests",
     "prepublishOnly": "npm run build && npm test",
-    "clean": "rm -rf dist coverage .nyc",
-    "coverage": "codecov -f coverage/*.json"
+    "clean": "rm -rf dist coverage .nyc"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.4",
-    "@types/mocha": "^5.2.2",
-    "avl": "^1.4.4",
-    "benchmark": "^2.1.4",
-    "bintrees": "^1.0.2",
-    "chai": "^4.2.0",
-    "codecov": "^3.8.3",
-    "mocha": "^6.2.0",
-    "nodemon": "^2.0.20",
-    "nyc": "^14.1.1",
-    "reify": "*",
-    "rollup": "*",
-    "rollup-plugin-typescript2": "^0.24.1",
-    "ts-node": "^6.1.1",
-    "tslib": "^1.9.3",
-    "tslint": "^5.14.0",
-    "typescript": "^2.9.2"
+    "@vitest/coverage-v8": "4.0.16",
+    "avl": "2.0.0",
+    "bintrees": "1.0.2",
+    "oxlint": "1.35.0",
+    "typescript": "5.8.2",
+    "vite": "7.3.0",
+    "vite-plugin-dts": "4.5.4",
+    "vitest": "4.0.16"
   },
   "keywords": [
     "binary-tree",
@@ -62,30 +49,14 @@
     "splay",
     "balanced-search-tree"
   ],
-  "mocha": {
-    "require": [
-      "ts-node/register"
-    ]
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/splaytree.mjs",
+      "require": "./dist/splaytree.umd.js"
+    }
   },
-  "nyc": {
-    "include": [
-      "src/*.ts"
-    ],
-    "exclude": [
-      "tests/**/*.ts"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "sourceMap": true,
-    "instrument": true
-  },
-  "dependencies": {}
+  "engines": {
+    "node": ">=18.20 || >=20"
+  }
 }

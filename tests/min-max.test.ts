@@ -1,37 +1,33 @@
-import { describe, it } from 'mocha';
-import { assert }       from 'chai';
+import { describe, it, expect } from "vitest";
+import Tree from "../src/index";
 
-import Tree from '../src/index';
-
-
-describe('find min and max', () => {
-
-  it('should return the maximum key in the tree', () => {
+describe("find min and max", () => {
+  it("should return the maximum key in the tree", () => {
     const tree = new Tree();
     tree.insert(3);
     tree.insert(5);
     tree.insert(1);
     tree.insert(4);
     tree.insert(2);
-    assert.equal(tree.max(), 5);
+    expect(tree.max()).toBe(5);
   });
 
-  it ('should return null for max if the tree is empty', () => {
+  it("should return null for max if the tree is empty", () => {
     const tree = new Tree();
-    assert.isNull(tree.max());
+    expect(tree.max()).toBeNull();
   });
 
-  it('should return the minimum key in the tree', () => {
+  it("should return the minimum key in the tree", () => {
     const tree = new Tree();
     tree.insert(5);
     tree.insert(3);
     tree.insert(1);
     tree.insert(4);
     tree.insert(2);
-    assert.equal(tree.min(), 1);
+    expect(tree.min()).toBe(1);
   });
 
-  it ('should return the max node', () => {
+  it("should return the max node", () => {
     const tree = new Tree();
     tree.insert(3);
     tree.insert(5, 10);
@@ -39,16 +35,16 @@ describe('find min and max', () => {
     tree.insert(4);
     tree.insert(2);
     const node = tree.maxNode();
-    assert.equal(node.key, 5);
-    assert.equal(node.data, 10);
+    expect(node!.key).toBe(5);
+    expect(node!.data).toBe(10);
   });
 
-  it ('should return null for maxNode if the tree is empty', () => {
+  it("should return null for maxNode if the tree is empty", () => {
     const tree = new Tree();
-    assert.isNull(tree.maxNode());
+    expect(tree.maxNode()).toBeNull();
   });
 
-  it ('should return the min node', () => {
+  it("should return the min node", () => {
     const tree = new Tree();
     tree.insert(5);
     tree.insert(3);
@@ -56,28 +52,27 @@ describe('find min and max', () => {
     tree.insert(4);
     tree.insert(2);
     const node = tree.minNode();
-    assert.equal(node.key, 1);
-    assert.equal(node.data, 20);
+    expect(node!.key).toBe(1);
+    expect(node!.data).toBe(20);
   });
 
-  it ('should return null for min if the tree is empty', () => {
+  it("should return null for min if the tree is empty", () => {
     const tree = new Tree();
-    assert.isNull(tree.min());
+    expect(tree.min()).toBeNull();
   });
 
-  it ('should support removing min node', () => {
+  it("should support removing min node", () => {
     const tree = new Tree();
     tree.insert(5);
     tree.insert(3);
     tree.insert(1);
     tree.insert(4);
     tree.insert(2);
-    assert.equal(tree.pop().key, 1);
+    expect(tree.pop()!.key).toBe(1);
   });
 
-  it ('should return null for minNode if the tree is empty', () => {
+  it("should return null for minNode if the tree is empty", () => {
     const tree = new Tree();
-    assert.isNull(tree.minNode());
+    expect(tree.minNode()).toBeNull();
   });
-
 });

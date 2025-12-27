@@ -1,24 +1,20 @@
-import { describe, it } from 'mocha';
-import { assert }       from 'chai';
+import { describe, it, expect } from "vitest";
+import Tree from "../src/index";
 
-import Tree from '../src/index';
-
-describe ('Duplicate keys', () => {
-
-  it ('should allow inserting of duplicate key', () => {
-    const tree = new Tree<Number,any>();
+describe("Duplicate keys", () => {
+  it("should allow inserting of duplicate key", () => {
+    const tree = new Tree<number, any>();
     const values = [2, 12, 1, -6, 1];
 
     values.forEach((v) => {
       tree.insert(v);
     });
 
-    assert.deepEqual(tree.keys(), [-6, 1, 1, 2, 12]);
-    assert.equal(tree.size, 5);
+    expect(tree.keys()).toEqual([-6, 1, 1, 2, 12]);
+    expect(tree.size).toBe(5);
   });
 
-
-  it ('should allow multiple duplicate keys in a row', () => {
+  it("should allow multiple duplicate keys in a row", () => {
     const tree = new Tree();
     const values = [2, 12, 1, 1, -6, 2, 1, 1, 13];
 
@@ -26,12 +22,11 @@ describe ('Duplicate keys', () => {
       tree.insert(v);
     });
 
-
-    assert.deepEqual(tree.keys(), [ -6, 1, 1, 1, 1, 2, 2, 12, 13 ]);
-    assert.equal(tree.size, 9);
+    expect(tree.keys()).toEqual([-6, 1, 1, 1, 1, 2, 2, 12, 13]);
+    expect(tree.size).toBe(9);
   });
 
-  it ('should remove from a tree with duplicate keys correctly', () => {
+  it("should remove from a tree with duplicate keys correctly", () => {
     const tree = new Tree();
     const values = [2, 12, 1, 1, -6, 1, 1];
 
@@ -41,14 +36,14 @@ describe ('Duplicate keys', () => {
     for (let i = 0; i < 4; i++) {
       tree.remove(1);
 
-      if (i < 3) assert.isTrue(tree.contains(1));
-      assert.equal(tree.size, --size);
+      if (i < 3) expect(tree.contains(1)).toBe(true);
+      expect(tree.size).toBe(--size);
     }
 
-    assert.isFalse(tree.contains(1));
+    expect(tree.contains(1)).toBe(false);
   });
 
-  it ('should remove from a tree with multiple duplicate keys correctly', () => {
+  it("should remove from a tree with multiple duplicate keys correctly", () => {
     const tree = new Tree();
     const values = [2, 12, 1, 1, -6, 1, 1, 2, 0, 2];
 
@@ -57,11 +52,11 @@ describe ('Duplicate keys', () => {
     let size = tree.size;
     while (!tree.isEmpty()) {
       tree.pop();
-      assert.equal(tree.size, --size);
+      expect(tree.size).toBe(--size);
     }
   });
 
-  it ('should disallow duplicates if noDuplicates is set', () => {
+  it("should disallow duplicates if noDuplicates is set", () => {
     const tree = new Tree();
     const values = [2, 12, 1, -6, 1];
 
@@ -69,12 +64,11 @@ describe ('Duplicate keys', () => {
       tree.add(v);
     });
 
-    assert.deepEqual(tree.keys(), [-6, 1, 2, 12]);
-    assert.equal(tree.size, 4);
+    expect(tree.keys()).toEqual([-6, 1, 2, 12]);
+    expect(tree.size).toBe(4);
   });
 
-
-  it ('should add only if the key is not there', () => {
+  it("should add only if the key is not there", () => {
     const tree = new Tree();
     tree.insert(1);
     tree.insert(2);
@@ -82,6 +76,6 @@ describe ('Duplicate keys', () => {
 
     const s = tree.size;
     tree.add(1);
-    assert.equal(tree.size, s);
+    expect(tree.size).toBe(s);
   });
 });

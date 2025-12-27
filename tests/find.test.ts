@@ -1,41 +1,38 @@
-import { describe, it } from 'mocha';
-import { assert }       from 'chai';
+import { describe, it, expect } from "vitest";
+import Tree from "../src/index";
 
-import Tree from '../src/index';
-
-describe ('find', () => {
-
-  it('should return key as the result of search', () => {
-    const tree = new Tree<Number,any>();
-    assert.equal(tree.find(1), null);
-    assert.equal(tree.find(2), null);
-    assert.equal(tree.find(3), null);
+describe("find", () => {
+  it("should return key as the result of search", () => {
+    const tree = new Tree<number, any>();
+    expect(tree.find(1)).toBeNull();
+    expect(tree.find(2)).toBeNull();
+    expect(tree.find(3)).toBeNull();
     tree.insert(1, 4);
     tree.insert(2, 5);
     tree.insert(3, 6);
 
     let root = tree.root;
-    assert.equal(tree.find(1).data, 4);
-    assert.notStrictEqual(root, tree.root);
+    expect(tree.find(1)!.data).toBe(4);
+    expect(root).not.toBe(tree.root);
     root = tree.root;
 
-    assert.equal(tree.find(2).data, 5);
-    assert.notStrictEqual(root, tree.root);
+    expect(tree.find(2)!.data).toBe(5);
+    expect(root).not.toBe(tree.root);
     root = tree.root;
 
-    assert.equal(tree.find(3).data, 6);
-    assert.notStrictEqual(root, tree.root);
+    expect(tree.find(3)!.data).toBe(6);
+    expect(root).not.toBe(tree.root);
     root = tree.root;
 
-    assert.isNull(tree.find(8));
-    assert.strictEqual(root, tree.root);
+    expect(tree.find(8)).toBeNull();
+    expect(root).toBe(tree.root);
   });
 
-  it ('should allow finding node without splaying', () => {
-    const tree = new Tree<Number,any>();
-    assert.equal(tree.findStatic(1), null);
-    assert.equal(tree.findStatic(2), null);
-    assert.equal(tree.findStatic(3), null);
+  it("should allow finding node without splaying", () => {
+    const tree = new Tree<number, any>();
+    expect(tree.findStatic(1)).toBeNull();
+    expect(tree.findStatic(2)).toBeNull();
+    expect(tree.findStatic(3)).toBeNull();
     tree.insert(-2, 8);
     tree.insert(1, 4);
     tree.insert(2, 5);
@@ -43,17 +40,17 @@ describe ('find', () => {
 
     tree.find(2);
     const root = tree.root;
-    assert.equal(tree.findStatic(1).data, 4);
-    assert.strictEqual(root, tree.root);
+    expect(tree.findStatic(1)!.data).toBe(4);
+    expect(root).toBe(tree.root);
 
-    assert.equal(tree.findStatic(2).data, 5);
-    assert.strictEqual(root, tree.root);
+    expect(tree.findStatic(2)!.data).toBe(5);
+    expect(root).toBe(tree.root);
 
-    assert.equal(tree.findStatic(3).data, 6);
-    assert.strictEqual(root, tree.root);
+    expect(tree.findStatic(3)!.data).toBe(6);
+    expect(root).toBe(tree.root);
 
-    assert.equal(tree.findStatic(-2).data, 8);
+    expect(tree.findStatic(-2)!.data).toBe(8);
 
-    assert.strictEqual(tree.find(2), tree.root);
+    expect(tree.find(2)).toBe(tree.root);
   });
 });

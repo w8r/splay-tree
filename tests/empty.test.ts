@@ -1,17 +1,14 @@
-import { describe, it } from 'mocha';
-import { assert }       from 'chai';
+import { describe, it, expect } from "vitest";
+import Tree from "../src/index";
 
-import Tree from '../src/index';
-
-describe ('empty check', () => {
-
-  it ('should return whether the tree is empty', () => {
+describe("empty check", () => {
+  it("should return whether the tree is empty", () => {
     const tree = new Tree<number, any>();
 
-    assert.isTrue(tree.isEmpty());
+    expect(tree.isEmpty()).toBe(true);
     tree.insert(1);
-    assert.isFalse(tree.isEmpty());
+    expect(tree.isEmpty()).toBe(false);
     tree.remove(1);
-    assert.isTrue(tree.isEmpty());
+    expect(tree.isEmpty()).toBe(true);
   });
 });
