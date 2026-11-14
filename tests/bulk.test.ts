@@ -51,4 +51,16 @@ describe("bulk-load", () => {
     t.load(Array.from({ length: 10 }, (_, i) => 5 + 10 * i));
     expect(t.keys()).toEqual(Array.from({ length: 20 }, (_, i) => 5 * i));
   });
+
+  it("should update size when loading into a tree with contents", () => {
+    const t = new Tree();
+    t.load([1, 2]);
+    t.load([5, 9]);
+    expect(t.keys()).toEqual([1, 2, 5, 9]);
+    expect(t.size).toBe(4);
+
+    t.load([3, 4]);
+    expect(t.keys()).toEqual([1, 2, 3, 4, 5, 9]);
+    expect(t.size).toBe(6);
+  });
 });
