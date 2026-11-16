@@ -65,4 +65,30 @@ describe("update", () => {
     t.update(7, -3);
     expect(t.keys()).toEqual([-3, 1, 4, 5, 6]);
   });
+
+  it("keeps size when the key exists", () => {
+    const t = createTree([1, 2, 3, 4, 5]);
+    t.update(3, 6);
+    expect(t.size).toBe(5);
+    t.update(1, -1);
+    expect(t.size).toBe(5);
+  });
+
+  it("counts the new key when the key is missing", () => {
+    const t = createTree([3, 4]);
+    t.update(8, 6);
+    expect(t.keys()).toEqual([3, 4, 6]);
+    expect(t.size).toBe(3);
+
+    t.update(0, 1);
+    expect(t.keys()).toEqual([1, 3, 4, 6]);
+    expect(t.size).toBe(4);
+  });
+
+  it("counts the new key on an empty tree", () => {
+    const t = new Tree();
+    t.update(1, 2);
+    expect(t.keys()).toEqual([2]);
+    expect(t.size).toBe(1);
+  });
 });

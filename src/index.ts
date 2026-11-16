@@ -487,6 +487,7 @@ export default class Tree<Key = number, Value = any> {
       );
       size = this._size + size;
       this._root = sortedListToBST({ head: mergedList }, 0, size);
+      this._size = size;
     }
     return this;
   }
@@ -512,6 +513,12 @@ export default class Tree<Key = number, Value = any> {
 
   public update(key: Key, newKey: Key, newData?: Value): void {
     const comparator = this._comparator;
+    // if `key` is missing, split() removes nothing and `newKey` is a new node
+    if (this._root === null) this._size++;
+    else {
+      this._root = splay(key, this._root, comparator);
+      if (comparator(key, this._root.key) !== 0) this._size++;
+    }
     let { left, right } = split(key, this._root!, comparator);
     if (comparator(key, newKey) < 0) {
       right = insert(newKey, newData, right!, comparator);
