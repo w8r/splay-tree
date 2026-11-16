@@ -1,7 +1,7 @@
 {
   "name": "splaytree",
-  "version": "3.2.3",
-  "author": "Alexander Milevski <info@w8r.name>",
+  "version": "3.2.4",
+  "author": "Alexander Milevski <alex@milevski.co>",
   "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
   "type": "module",
