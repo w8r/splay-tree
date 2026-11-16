@@ -3,12 +3,26 @@ import { AVLTree } from "avl";
 import { RBTree } from "bintrees";
 import Splay from "../src/index";
 
+// Seeded PRNG (mulberry32) so every run, on every branch, uses the same data.
+// Splay tree shape depends on insertion order, so random data made runs
+// incomparable.
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const random = mulberry32(0x5eed);
+
 function generateRValues(N: number, min = 0, max = N): number[] {
   const map: Record<number, boolean> = {};
   const res: number[] = [];
   let i = 0;
   while (i < N) {
-    const v = min + Math.floor(Math.random() * max);
+    const v = min + Math.floor(random() * max);
     if (!map[v]) {
       map[v] = true;
       res.push(v);
@@ -20,7 +34,6 @@ function generateRValues(N: number, min = 0, max = N): number[] {
 
 const N = 1000;
 const rvalues = generateRValues(N);
-const values = new Array(N).fill(0).map((n, i) => i);
 
 const comparator = (a: number, b: number) => a - b;
 
@@ -30,8 +43,15 @@ rvalues.forEach((v) => prefilledAVL.insert(v));
 const prefilledRB = new RBTree(comparator);
 rvalues.forEach((v) => prefilledRB.insert(v));
 
-const prefilledSplay = new Splay(comparator);
-rvalues.forEach((v) => prefilledSplay.insert(v));
+function prefillSplay() {
+  const t = new Splay(comparator);
+  rvalues.forEach((v) => t.insert(v));
+  return t;
+}
+// Separate trees: find() splays and reshapes the tree, which would otherwise
+// change the input of the findStatic() bench.
+const splayForFind = prefillSplay();
+const splayForFindStatic = prefillSplay();
 
 describe(`Insert (x${N})`, () => {
   bench("Bintrees RB", () => {
@@ -56,11 +76,11 @@ describe(`Random read (x${N})`, () => {
   });
 
   bench("Splay (current)", () => {
-    for (let i = N - 1; i; i--) prefilledSplay.find(rvalues[i]);
+    for (let i = N - 1; i; i--) splayForFind.find(rvalues[i]);
   });
 
   bench("Splay (current) - static", () => {
-    for (let i = N - 1; i; i--) prefilledSplay.findStatic(rvalues[i]);
+    for (let i = N - 1; i; i--) splayForFindStatic.findStatic(rvalues[i]);
   });
 
   bench("AVL", () => {
@@ -68,17 +88,26 @@ describe(`Random read (x${N})`, () => {
   });
 });
 
-describe(`Remove (x${N})`, () => {
+// Removing from a shared prefilled tree empties it on the first iteration, so
+// every later iteration measured removes on an empty tree. Build the tree in
+// each iteration instead; subtract the Insert suite to estimate remove cost.
+describe(`Insert + remove (x${N})`, () => {
   bench("Bintrees RB", () => {
-    for (let i = 0; i < N; i++) prefilledRB.remove(rvalues[i]);
+    const t = new RBTree(comparator);
+    for (let i = 0; i < N; i++) t.insert(rvalues[i]);
+    for (let i = 0; i < N; i++) t.remove(rvalues[i]);
   });
 
   bench("Splay (current)", () => {
-    for (let i = 0; i < N; i++) prefilledSplay.remove(rvalues[i]);
+    const t = new Splay(comparator);
+    for (let i = 0; i < N; i++) t.insert(rvalues[i]);
+    for (let i = 0; i < N; i++) t.remove(rvalues[i]);
   });
 
   bench("AVL", () => {
-    for (let i = N - 1; i; i--) prefilledAVL.remove(values[i]);
+    const t = new AVLTree();
+    for (let i = 0; i < N; i++) t.insert(rvalues[i]);
+    for (let i = 0; i < N; i++) t.remove(rvalues[i]);
   });
 });
 
