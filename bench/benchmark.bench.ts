@@ -129,7 +129,7 @@ describe(`Bulk-load (x${M})`, () => {
 
 const L = 1000;
 const K = 1000;
-const batch1 = new Array(L).fill(0).map((_, i) => i);
+const batch1 = Array.from({ length: L }, (_, i) => i);
 const batch2 = generateRValues(K, L);
 
 describe(`Bulk-add (x${K}) to ${L}`, () => {

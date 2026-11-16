@@ -3,6 +3,8 @@
 [Splay-tree](https://en.wikipedia.org/wiki/Splay_tree): **[fast](#benchmarks)**(non-recursive) and **simple**(< 1000 lines of code)
 Implementation is adapted directly from Wikipedia with the same API as [w8r/avl](https://github.com/w8r/avl), to run the benchmarks against other trees.
 
+**[Website and live demo](https://w8r.github.io/splay-tree/)**
+
 This tree is based on **top-down** splaying algorithm by D.Sleator. It supports
 
 - splitting, merging

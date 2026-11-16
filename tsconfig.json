@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
-    "lib": ["ES2020", "DOM"],
-    "declarationDir": "./dist/types/",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "resolveJsonModule": true,
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src", "tests", "bench", "demo", "*.ts"],
+  "exclude": ["node_modules", "dist", "demo-dist"]
 }

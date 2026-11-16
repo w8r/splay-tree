@@ -5,7 +5,10 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.ts"],
     coverage: {
+      include: ["src"],
       reporter: ["text", "html", "json"],
+      // The website claims 100% coverage: keep it that way
+      thresholds: { 100: true },
     },
   },
 });

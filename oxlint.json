@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "typescript": "warn",
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  }
+}

@@ -49,7 +49,7 @@ describe("custom comparator", () => {
       objects
         .slice()
         .sort(comparator)
-        .map((k) => k.value)
+        .map((k) => k.value),
     );
   });
 });

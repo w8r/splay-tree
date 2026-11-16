@@ -23,4 +23,8 @@ describe("printing", () => {
     └── 2
 `);
   });
+
+  it("should print an empty tree as an empty string", () => {
+    expect(new Tree().toString()).toBe("");
+  });
 });

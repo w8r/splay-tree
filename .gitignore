@@ -9,3 +9,4 @@ coverage
 .nyc_output/
 typings
 bench/baseline.json
+demo-dist
