@@ -1,0 +1,63 @@
+name: Benchmark comment
+
+# Posts the report from the Benchmarks workflow as a single PR comment, updated
+# on every run. It is a separate workflow so that PRs from forks, whose
+# pull_request runs only get a read-only token, still get the comment. It never
+# checks out or runs PR code: it only reads the uploaded report.
+#
+# Note: GitHub runs workflow_run workflows from the default branch, so this
+# starts working once it is merged into master.
+
+on:
+  workflow_run:
+    workflows: [Benchmarks]
+    types: [completed]
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  comment:
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion != 'cancelled'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: bench-report
+          path: report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Post or update comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          pr=$(cat report/pr-number)
+          # The artifact was produced by PR code, so don't trust it: the PR number
+          # must be an integer and that PR's head must be the commit that was benchmarked.
+          if ! [[ "$pr" =~ ^[0-9]+$ ]]; then echo "Invalid PR number"; exit 1; fi
+          if [ "$(gh api "repos/$REPO/pulls/$pr" --jq .head.sha)" != "$HEAD_SHA" ]; then
+            echo "PR #$pr has moved on from $HEAD_SHA; skipping."
+            exit 0
+          fi
+
+          if [ ! -f report/report.md ]; then
+            printf '<!-- bench-report -->\n## Benchmark comparison\n\n⚠️ The benchmarks failed to run. See the [workflow run](%s).\n' "$RUN_URL" > report/report.md
+          else
+            printf '\n[Workflow run](%s)\n' "$RUN_URL" >> report/report.md
+          fi
+
+          id=$(gh api "repos/$REPO/issues/$pr/comments" --paginate \
+            --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- bench-report -->"))) | .id' | head -n 1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -F body=@report/report.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$pr/comments" -F body=@report/report.md > /dev/null
+          fi
