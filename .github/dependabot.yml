@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Security updates only, as before this file existed: no routine
+    # version-update PRs.
+    open-pull-requests-limit: 0
+    groups:
+      # vitest and its @vitest/* plugins require the exact same version, so
+      # updating them in separate PRs breaks `npm ci` (see #53 and #54).
+      vitest:
+        applies-to: security-updates
+        patterns:
+          - "vitest"
+          - "@vitest/*"

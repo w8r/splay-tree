@@ -1,0 +1,89 @@
+name: Benchmarks
+
+# Runs the base branch and the PR alternately on the same runner and compares
+# them with bench/compare.mjs. The job fails if a benchmark is slower than the
+# threshold in every round. It has a read-only token, so it is safe for PRs from
+# forks; bench-comment.yml posts the report.
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bench-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  ROUNDS: 3
+  THRESHOLD: "0.10"
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: head
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+          cache-dependency-path: |
+            head/package-lock.json
+            base/package-lock.json
+
+      - run: npm ci
+        working-directory: head
+
+      - run: npm ci
+        working-directory: base
+
+      # Benchmark both sides with the PR's bench files, so the comparison measures
+      # library changes, not changes to the benchmarks themselves.
+      - name: Use the PR's benchmarks on the base
+        run: rm -rf base/bench && cp -R head/bench base/bench
+
+      - name: Run benchmarks
+        run: |
+          mkdir -p results/base results/head
+          for i in $(seq "$ROUNDS"); do
+            # Alternate the order so slow drift on the runner doesn't favour one side.
+            if [ $((i % 2)) -eq 1 ]; then order="base head"; else order="head base"; fi
+            for side in $order; do
+              echo "::group::round $i: $side"
+              (cd "$side" && npx vitest bench --run --outputJson "../results/$side/round-$i.json")
+              echo "::endgroup::"
+            done
+          done
+
+      - name: Compare
+        run: >
+          node head/bench/compare.mjs
+          --base results/base --head results/head
+          --threshold "$THRESHOLD" --out results/report.md
+
+      - name: Write job summary
+        if: always()
+        run: |
+          [ -f results/report.md ] && cat results/report.md >> "$GITHUB_STEP_SUMMARY" || true
+          echo "${{ github.event.pull_request.number }}" > results/pr-number
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bench-report
+          path: |
+            results/report.md
+            results/pr-number
+          if-no-files-found: ignore
+          retention-days: 7
