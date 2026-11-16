@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>splaytree: a self-adjusting binary search tree</title>
+    <meta
+      name="description"
+      content="A fast, non-recursive splay tree for JavaScript and TypeScript. Sorted keys, custom comparators, split, merge and bulk loading. 2 KB gzipped, no dependencies."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="splaytree: a self-adjusting binary search tree" />
+    <meta
+      property="og:description"
+      content="A fast, non-recursive splay tree for JavaScript and TypeScript. Sorted keys, custom comparators, split, merge and bulk loading. 2 KB gzipped, no dependencies."
+    />
+    <meta property="og:url" content="https://w8r.github.io/splay-tree/" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 7 8 17M16 7l8 10M8 17l-4 8M8 17l5 8' stroke='%233a4152' stroke-width='2.5' fill='none'/%3E%3Ccircle cx='16' cy='7' r='4.5' fill='%23c3a6ff'/%3E%3Ccircle cx='8' cy='17' r='3.5' fill='%237aa2ff'/%3E%3Ccircle cx='24' cy='17' r='3.5' fill='%237aa2ff'/%3E%3Ccircle cx='4' cy='25' r='2.5' fill='%238b8f99'/%3E%3Ccircle cx='13' cy='25' r='2.5' fill='%238b8f99'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <header class="hero" id="hero">
+      <canvas
+        id="hero-canvas"
+        aria-label="A splay tree; clicking a node looks it up and rotates it to the root"
+      ></canvas>
+      <div class="wrap">
+        <div class="hero-top">
+          <a class="brand" href="./">splaytree</a>
+          <nav>
+            <a href="#api">API</a>
+            <a href="#benchmarks">Benchmarks</a>
+            <a href="https://www.npmjs.com/package/splaytree">npm</a>
+            <a href="https://github.com/w8r/splay-tree">GitHub</a>
+          </nav>
+        </div>
+        <div class="hero-copy" id="hero-copy">
+          <h1>A search tree that moves what you use to the top.</h1>
+          <p>
+            A self-adjusting binary search tree for JavaScript and TypeScript. Every lookup rotates
+            the key to the root, so the keys you use often stay a few steps away. Click a node to
+            look it up.
+          </p>
+          <p class="cite">
+            D. D. Sleator, R. E. Tarjan.
+            <a href="https://doi.org/10.1145/3828.3835"><i>Self-adjusting binary search trees</i></a
+            >. Journal of the ACM 32(3), 652–686, 1985.
+          </p>
+        </div>
+      </div>
+      <div class="controls" id="hero-controls">
+        <div class="chips" role="group" aria-label="What a click does">
+          <span class="label">click</span>
+          <button data-op="find" aria-pressed="true"><code>find</code></button>
+          <button data-op="findStatic" aria-pressed="false"><code>findStatic</code></button>
+          <button data-op="remove" aria-pressed="false"><code>remove</code></button>
+        </div>
+        <div class="chips">
+          <button id="hero-insert"><code>insert</code> random</button>
+          <button id="hero-auto" aria-pressed="true">auto</button>
+          <button id="hero-reset">reset</button>
+        </div>
+        <div class="readout">
+          <span>
+            <span class="key" style="--c: var(--path)">search path</span>&nbsp;
+            <span class="key" style="--c: var(--accent)">often used</span>
+          </span>
+          <span id="hero-stats">&nbsp;</span>
+          <span id="hero-last">&nbsp;</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section>
+        <div class="stats">
+          <div class="stat"><b>2 KB</b><span>minified and gzipped, no dependencies</span></div>
+          <div class="stat"><b>O(log n)</b><span>amortized search, insert and remove</span></div>
+          <div class="stat">
+            <b>No recursion</b><span>top-down splaying, safe on deep trees</span>
+          </div>
+          <div class="stat"><b>TypeScript</b><span>types included, ESM and UMD builds</span></div>
+        </div>
+      </section>
+
+      <section class="code">
+        <div>
+          <h2>A sorted map with a comparator</h2>
+          <p>
+            Keys can be anything your comparator orders. Nodes carry a <code>key</code> and a
+            <code>data</code> field. <code>insert</code> keeps duplicates, <code>add</code> skips
+            keys that are already there.
+          </p>
+          <div class="install">
+            <span>npm install splaytree</span>
+            <button data-copy="npm install splaytree">copy</button>
+          </div>
+          <div class="install">
+            <span>&lt;script src="https://unpkg.com/splaytree"&gt;</span>
+            <button data-copy='&lt;script src="https://unpkg.com/splaytree"&gt;&lt;/script&gt;'>
+              copy
+            </button>
+          </div>
+        </div>
+        <pre><span class="k">import</span> SplayTree <span class="k">from</span> <span class="s">"splaytree"</span>;
+
+<span class="k">const</span> tree = <span class="k">new</span> SplayTree&lt;<span class="k">number</span>, <span class="k">string</span>&gt;();
+tree.insert(<span class="n">5</span>, <span class="s">"five"</span>);
+tree.insert(<span class="n">-10</span>, <span class="s">"minus ten"</span>);
+tree.insert(<span class="n">33</span>, <span class="s">"thirty-three"</span>);
+tree.insert(<span class="n">2</span>, <span class="s">"two"</span>);
+
+tree.keys();          <span class="c">// [-10, 2, 5, 33]</span>
+tree.find(<span class="n">5</span>)?.data;   <span class="c">// "five", and 5 is now the root</span>
+tree.root?.key;       <span class="c">// 5</span>
+
+<span class="c">// Keys in [0, 10], in order</span>
+tree.range(<span class="n">0</span>, <span class="n">10</span>, (node) =&gt; { console.log(node.key); }); <span class="c">// 2, 5</span>
+
+<span class="c">// Any key type, with your own ordering: SplayTree&lt;Date, unknown&gt;</span>
+<span class="k">const</span> byDate = <span class="k">new</span> SplayTree((a: Date, b: Date) =&gt; a.getTime() - b.getTime());</pre>
+      </section>
+
+      <section id="api">
+        <h2>API</h2>
+        <p class="lede">
+          Methods marked <span class="splays">splays</span> restructure the tree around the key they
+          touch. The others only read it, so they leave its shape as it is.
+        </p>
+        <pre class="types" id="api-types"></pre>
+        <div class="api" id="api-list"></div>
+      </section>
+
+      <section id="benchmarks">
+        <h2>Benchmarks</h2>
+        <p class="lede">
+          Operations per second, higher is better, against the
+          <a href="https://www.npmjs.com/package/avl">avl</a> and
+          <a href="https://www.npmjs.com/package/bintrees">bintrees</a> red-black tree. Uniformly
+          random reads are the worst case for a splay tree: every lookup reshapes the tree. It pays
+          off when some keys are read much more often than others.
+        </p>
+        <div class="bench" id="bench"></div>
+        <p class="note">
+          Apple M3, Node 24.21, 1,000 or 10,000 distinct random integer keys from a fixed seed.
+          Reproduce with <code>npm run bench</code>.
+        </p>
+      </section>
+
+      <footer>
+        MIT licensed. By
+        <a href="https://github.com/w8r/">Alexander Milevski</a> ·
+        <a href="https://github.com/w8r/splay-tree">GitHub</a> ·
+        <a href="https://www.npmjs.com/package/splaytree">npm</a>
+      </footer>
+    </main>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
