@@ -1,0 +1,32 @@
+name: CodSpeed Benchmarks
+
+on:
+  # Runs on master record the baseline that pull requests are compared to.
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+# No `permissions` block: on public repos CodSpeed accepts tokenless uploads,
+# which also lets pull requests from forks report results.
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Run benchmarks
+        uses: CodSpeedHQ/action@v5
+        with:
+          mode: simulation
+          run: npx vitest bench --run

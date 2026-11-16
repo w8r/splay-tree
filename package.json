@@ -35,6 +35,7 @@
     "clean": "rm -rf dist coverage .nyc"
   },
   "devDependencies": {
+    "@codspeed/vitest-plugin": "6.1.1",
     "@vitest/coverage-v8": "4.0.16",
     "avl": "2.0.0",
     "bintrees": "1.0.2",
