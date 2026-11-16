@@ -27,6 +27,8 @@
     "test": "vitest",
     "test:watch": "vitest watch",
     "bench": "vitest bench",
+    "bench:baseline": "vitest bench --run --outputJson bench/baseline.json",
+    "bench:compare": "vitest bench --run --compare bench/baseline.json",
     "coverage": "vitest run --coverage",
     "lint": "oxlint src tests",
     "prepublishOnly": "npm run build && npm test",
