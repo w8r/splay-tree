@@ -1,28 +1,66 @@
 name: Publish to npm
 
+# Release flow, on an up-to-date master:
+#   npm version patch|minor|major   # bumps package.json, commits, tags vX.Y.Z
+#   git push --follow-tags          # pushes the commit and the tag
+# Pushing the tag runs this workflow: it checks the tag, tests, builds,
+# publishes to npm with provenance, and creates the GitHub Release.
+
 on:
   push:
     tags:
       - "v*.*.*"
 
+permissions:
+  contents: write # create the GitHub Release
+  id-token: write # npm provenance
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # needed to check the tag is on master
+
+      - name: Check the tag
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json version $version."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "::error::Tag $GITHUB_REF_NAME points to a commit that isn't on master."
+            exit 1
+          fi
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.x
+          cache: "npm"
           registry-url: "https://registry.npmjs.org"
+
       - name: Update npm
         run: npm install -g npm@latest
+
       - run: npm ci
       - run: npm run lint
+      - run: npx vitest run
       - run: npm run build
+
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Skip if a release for this tag was already created by hand.
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists."
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
+          fi
