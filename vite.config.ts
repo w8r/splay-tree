@@ -28,15 +28,17 @@ export default defineConfig({
     sourcemap: true,
     rollupOptions: {
       input: "src/index.ts",
+      // postBanner is added after minification; a plain `banner` gets
+      // stripped from the minified UMD bundle.
       output: [
         {
           format: "es",
-          banner,
+          postBanner: banner,
         },
         {
           format: "umd",
           name: "SplayTree",
-          banner,
+          postBanner: banner,
         },
       ],
     },
