@@ -1,17 +1,14 @@
 import Node from "./node";
-import { Key, Value } from "./types";
 
 export type Comparator<Key> = (a: Key, b: Key) => number;
-export type Visitor<Key, Value> = (
-  node: Node<Key, Value>
-) => undefined | boolean | void;
+export type Visitor<Key, Value> = (node: Node<Key, Value>) => undefined | boolean | void;
 export type NodePrinter<Key, Value> = (node: Node<Key, Value>) => string;
 
 /* follows "An implementation of top-down splaying"
  * by D. Sleator <sleator@cs.cmu.edu> March 1992
  */
 
-function DEFAULT_COMPARE(a: Key, b: Key): number {
+function DEFAULT_COMPARE<Key>(a: Key, b: Key): number {
   return a > b ? 1 : a < b ? -1 : 0;
 }
 
@@ -20,12 +17,12 @@ type TreeNodeList<Key, Value> = { head: Node<Key, Value> | null };
 /**
  * Simple top down splay, not requiring i to be in the tree t.
  */
-function splay(
+function splay<Key, Value>(
   i: Key,
   t: Node<Key, Value>,
-  comparator: Comparator<Key>
+  comparator: Comparator<Key>,
 ): Node<Key, Value> {
-  const N = new Node(null, null);
+  const N = new Node<Key, Value>(null as Key);
   let l = N;
   let r = N;
 
@@ -69,11 +66,11 @@ function splay(
   return t;
 }
 
-function insert(
+function insert<Key, Value>(
   i: Key,
-  data: Value,
-  t: Node<Key, Value>,
-  comparator: Comparator<Key>
+  data: Value | undefined,
+  t: Node<Key, Value> | null,
+  comparator: Comparator<Key>,
 ): Node<Key, Value> {
   const node = new Node(i, data);
 
@@ -96,10 +93,10 @@ function insert(
   return node;
 }
 
-function split(
+function split<Key, Value>(
   key: Key,
-  v: Node<Key, Value>,
-  comparator: Comparator<Key>
+  v: Node<Key, Value> | null,
+  comparator: Comparator<Key>,
 ): {
   left: Node<Key, Value> | null;
   right: Node<Key, Value> | null;
@@ -126,10 +123,10 @@ function split(
   return { left, right };
 }
 
-function merge(
+function merge<Key, Value>(
   left: Node<Key, Value> | null,
   right: Node<Key, Value> | null,
-  comparator: Comparator<Key>
+  comparator: Comparator<Key>,
 ) {
   if (right === null) return left;
   if (left === null) return right;
@@ -144,12 +141,12 @@ type StringCollector = (s: string) => void;
 /**
  * Prints level of the tree
  */
-function printRow(
-  root: Node<Key, Value>,
+function printRow<Key, Value>(
+  root: Node<Key, Value> | null,
   prefix: string,
   isTail: boolean,
   out: StringCollector,
-  printNode: NodePrinter<Key, Value>
+  printNode: NodePrinter<Key, Value>,
 ) {
   if (root) {
     out(`${prefix}${isTail ? "└── " : "├── "}${printNode(root)}\n`);
@@ -159,12 +156,12 @@ function printRow(
   }
 }
 
-export default class Tree<Key = number, Value = any> {
+export default class Tree<Key = number, Value = unknown> {
   private _comparator: Comparator<Key>;
   private _root: Node<Key, Value> | null = null;
   private _size: number = 0;
 
-  constructor(comparator = DEFAULT_COMPARE) {
+  constructor(comparator: Comparator<Key> = DEFAULT_COMPARE) {
     this._comparator = comparator;
   }
 
@@ -173,7 +170,7 @@ export default class Tree<Key = number, Value = any> {
    */
   public insert(key: Key, data?: Value): Node<Key, Value> {
     this._size++;
-    return (this._root = insert(key, data, this._root!, this._comparator));
+    return (this._root = insert(key, data, this._root, this._comparator));
   }
 
   /**
@@ -214,13 +211,17 @@ export default class Tree<Key = number, Value = any> {
    * @return {Node|null}
    */
   public remove(key: Key): void {
-    this._root = this._remove(key, this._root!, this._comparator);
+    this._root = this._remove(key, this._root, this._comparator);
   }
 
   /**
    * Deletes i from the tree if it's there
    */
-  private _remove(i: Key, t: Node<Key, Value>, comparator: Comparator<Key>) {
+  private _remove(
+    i: Key,
+    t: Node<Key, Value> | null,
+    comparator: Comparator<Key>,
+  ): Node<Key, Value> | null {
     let x;
     if (t === null) return null;
     t = splay(i, t, comparator);
@@ -288,7 +289,7 @@ export default class Tree<Key = number, Value = any> {
     return false;
   }
 
-  public forEach(visitor: Visitor<Key, Value>, ctx?: any): Tree<Key, Value> {
+  public forEach(visitor: Visitor<Key, Value>, ctx?: unknown): Tree<Key, Value> {
     let current = this._root;
     const Q = []; /* Initialize stack s */
     let done = false;
@@ -312,12 +313,7 @@ export default class Tree<Key = number, Value = any> {
   /**
    * Walk key range from `low` to `high`. Stops if `fn` returns a value.
    */
-  public range(
-    low: Key,
-    high: Key,
-    fn: Visitor<Key, Value>,
-    ctx?: any
-  ): Tree<Key, Value> {
+  public range(low: Key, high: Key, fn: Visitor<Key, Value>, ctx?: unknown): Tree<Key, Value> {
     const Q = [];
     const compare = this._comparator;
     let node = this._root;
@@ -460,14 +456,14 @@ export default class Tree<Key = number, Value = any> {
     return this;
   }
 
-  public toList() {
-    return toList(this._root!);
+  public toList(): Node<Key, Value> | null {
+    return toList(this._root);
   }
 
   /**
    * Bulk-load items. Both array have to be same size
    */
-  public load(keys: Key[], values: Value[] = [], presort: boolean = false) {
+  public load(keys: Key[], values: Value[] = [], presort: boolean = false): this {
     let size = keys.length;
     const comparator = this._comparator;
 
@@ -480,11 +476,7 @@ export default class Tree<Key = number, Value = any> {
       this._size = size;
     } else {
       // that re-builds the whole tree from two in-order traversals
-      const mergedList = mergeLists(
-        this.toList(),
-        createList(keys, values),
-        comparator
-      );
+      const mergedList = mergeLists(this.toList(), createList(keys, values), comparator);
       size = this._size + size;
       this._root = sortedListToBST({ head: mergedList }, 0, size);
       this._size = size;
@@ -503,11 +495,9 @@ export default class Tree<Key = number, Value = any> {
     return this._root;
   }
 
-  public toString(
-    printNode: NodePrinter<Key, Value> = (n) => String(n.key)
-  ): string {
+  public toString(printNode: NodePrinter<Key, Value> = (n) => String(n.key)): string {
     const out: string[] = [];
-    printRow(this._root!, "", true, (v) => out.push(v), printNode);
+    printRow(this._root, "", true, (v) => out.push(v), printNode);
     return out.join("");
   }
 
@@ -519,17 +509,20 @@ export default class Tree<Key = number, Value = any> {
       this._root = splay(key, this._root, comparator);
       if (comparator(key, this._root.key) !== 0) this._size++;
     }
-    let { left, right } = split(key, this._root!, comparator);
+    let { left, right } = split(key, this._root, comparator);
     if (comparator(key, newKey) < 0) {
-      right = insert(newKey, newData, right!, comparator);
+      right = insert(newKey, newData, right, comparator);
     } else {
-      left = insert(newKey, newData, left!, comparator);
+      left = insert(newKey, newData, left, comparator);
     }
     this._root = merge(left, right, comparator);
   }
 
-  public split(key: Key) {
-    return split(key, this._root!, this._comparator);
+  public split(key: Key): {
+    left: Node<Key, Value> | null;
+    right: Node<Key, Value> | null;
+  } {
+    return split(key, this._root, this._comparator);
   }
 
   *[Symbol.iterator]() {
@@ -553,11 +546,11 @@ export default class Tree<Key = number, Value = any> {
   }
 }
 
-function loadRecursive(
+function loadRecursive<Key, Value>(
   keys: Key[],
   values: Value[],
   start: number,
-  end: number
+  end: number,
 ): Node<Key, Value> | null {
   const size = end - start;
   if (size > 0) {
@@ -572,44 +565,44 @@ function loadRecursive(
   return null;
 }
 
-function createList(keys: Key[], values: Value[]): Node<Key, Value> {
-  const head = new Node<Key, Value>(null, null);
+function createList<Key, Value>(keys: Key[], values: Value[]): Node<Key, Value> | null {
+  const head = new Node<Key, Value>(null as Key);
   let p: Node<Key, Value> = head;
   for (let i = 0; i < keys.length; i++) {
     p = p.next = new Node(keys[i], values[i]);
   }
   p.next = null;
-  return head.next!;
+  return head.next;
 }
 
-function toList(root: Node<Key, Value>): Node<Key, Value> {
+function toList<Key, Value>(root: Node<Key, Value> | null): Node<Key, Value> | null {
   let current = root;
   const Q = [];
   let done = false;
 
-  const head = new Node<Key, Value>(null, null);
+  const head = new Node<Key, Value>(null as Key);
   let p = head;
 
   while (!done) {
     if (current) {
       Q.push(current);
-      current = current.left!;
+      current = current.left;
     } else {
       if (Q.length > 0) {
         current = p = p.next = Q.pop()!;
-        current = current.right!;
+        current = current.right;
       } else done = true;
     }
   }
   p.next = null; // that'll work even if the tree was empty
-  return head.next!;
+  return head.next;
 }
 
-function sortedListToBST(
+function sortedListToBST<Key, Value>(
   list: TreeNodeList<Key, Value>,
   start: number,
-  end: number
-) {
+  end: number,
+): Node<Key, Value> | null {
   const size = end - start;
   if (size > 0) {
     const middle = start + Math.floor(size / 2);
@@ -627,23 +620,23 @@ function sortedListToBST(
 }
 
 function mergeLists<Key, Value>(
-  l1: Node<Key, Value>,
-  l2: Node<Key, Value>,
-  compare: Comparator<Key>
-): Node<Key, Value> {
-  const head: Node<Key, Value> = new Node<Key, Value>(null as Key, null); // dummy
+  l1: Node<Key, Value> | null,
+  l2: Node<Key, Value> | null,
+  compare: Comparator<Key>,
+): Node<Key, Value> | null {
+  const head = new Node<Key, Value>(null as Key); // dummy
   let p = head;
 
-  let p1: Node<Key, Value> = l1;
-  let p2: Node<Key, Value> = l2;
+  let p1 = l1;
+  let p2 = l2;
 
   while (p1 !== null && p2 !== null) {
     if (compare(p1.key, p2.key) < 0) {
       p.next = p1;
-      p1 = p1.next!;
+      p1 = p1.next;
     } else {
       p.next = p2;
-      p2 = p2.next!;
+      p2 = p2.next;
     }
     p = p.next;
   }
@@ -654,15 +647,15 @@ function mergeLists<Key, Value>(
     p.next = p2;
   }
 
-  return head.next!;
+  return head.next;
 }
 
-function sort(
+function sort<Key, Value>(
   keys: Key[],
   values: Value[],
   left: number,
   right: number,
-  compare: Comparator<Key>
+  compare: Comparator<Key>,
 ) {
   if (left >= right) return;
 
@@ -677,13 +670,13 @@ function sort(
     while (compare(keys[j], pivot) > 0);
     if (i >= j) break;
 
-    let tmp = keys[i];
+    const key = keys[i];
     keys[i] = keys[j];
-    keys[j] = tmp;
+    keys[j] = key;
 
-    tmp = values[i];
+    const value = values[i];
     values[i] = values[j];
-    values[j] = tmp;
+    values[j] = value;
   }
 
   sort(keys, values, left, j, compare);
