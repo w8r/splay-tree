@@ -5,6 +5,10 @@ name: Publish to npm
 #   git push --follow-tags          # pushes the commit and the tag
 # Pushing the tag runs this workflow: it checks the tag, tests, builds,
 # publishes to npm with provenance, and creates the GitHub Release.
+#
+# Publishing uses npm trusted publishing (OIDC): no npm token is stored here.
+# npmjs.com must list this repo and workflow (publish.yml) as the package's
+# trusted publisher.
 
 on:
   push:
@@ -13,7 +17,7 @@ on:
 
 permissions:
   contents: write # create the GitHub Release
-  id-token: write # npm provenance
+  id-token: write # npm trusted publishing (OIDC) and provenance
 
 jobs:
   publish:
@@ -42,6 +46,7 @@ jobs:
           cache: "npm"
           registry-url: "https://registry.npmjs.org"
 
+      # Trusted publishing needs npm 11.5.1 or later.
       - name: Update npm
         run: npm install -g npm@latest
 
@@ -50,9 +55,8 @@ jobs:
       - run: npx vitest run
       - run: npm run build
 
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Authenticates through OIDC; provenance is generated automatically.
+      - run: npm publish --access public
 
       - name: Create GitHub Release
         env:
