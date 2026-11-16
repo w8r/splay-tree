@@ -4,8 +4,7 @@ import Node from "../src/node";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function count(tree: Node<number, any>, size = 0) {
-  if (tree)
-    size += count(tree.left as any, size) + count(tree.right as any, size);
+  if (tree) size += count(tree.left as any, size) + count(tree.right as any, size);
   return size;
 }
 

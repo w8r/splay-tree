@@ -19,7 +19,10 @@ import { join } from "node:path";
 const args = Object.fromEntries(
   process.argv
     .slice(2)
-    .reduce((acc, a, i, all) => (a.startsWith("--") ? [...acc, [a.slice(2), all[i + 1]]] : acc), []),
+    .reduce(
+      (acc, a, i, all) => (a.startsWith("--") ? [...acc, [a.slice(2), all[i + 1]]] : acc),
+      [],
+    ),
 );
 const threshold = Number(args.threshold ?? 0.1);
 if (!args.base || !args.head || !(threshold > 0 && threshold < 1)) {
@@ -51,7 +54,9 @@ function loadRounds(dir) {
 const base = loadRounds(args.base);
 const head = loadRounds(args.head);
 if (base.length === 0 || base.length !== head.length) {
-  console.error(`need the same, non-zero number of rounds (base: ${base.length}, head: ${head.length})`);
+  console.error(
+    `need the same, non-zero number of rounds (base: ${base.length}, head: ${head.length})`,
+  );
   process.exit(2);
 }
 
@@ -71,8 +76,14 @@ const onlyIn = { base: [], head: [] };
 for (const key of keys) {
   const [suite, name] = key.split("\u0000");
   const label = `${suite} › ${name}`;
-  if (!head.every((r) => r.has(key))) { onlyIn.base.push(label); continue; }
-  if (!base.every((r) => r.has(key))) { onlyIn.head.push(label); continue; }
+  if (!head.every((r) => r.has(key))) {
+    onlyIn.base.push(label);
+    continue;
+  }
+  if (!base.every((r) => r.has(key))) {
+    onlyIn.head.push(label);
+    continue;
+  }
 
   const ratios = base.map((r, i) => head[i].get(key) / r.get(key));
   const ratio = median(ratios);
@@ -105,8 +116,10 @@ const lines = [
   "|---|---|--:|--:|--:|--:|:-:|",
   ...rows,
 ];
-if (onlyIn.head.length) lines.push("", `Only measured on head (new, or failed on base): ${onlyIn.head.join(", ")}`);
-if (onlyIn.base.length) lines.push("", `Only measured on base (removed, or failed on head): ${onlyIn.base.join(", ")}`);
+if (onlyIn.head.length)
+  lines.push("", `Only measured on head (new, or failed on base): ${onlyIn.head.join(", ")}`);
+if (onlyIn.base.length)
+  lines.push("", `Only measured on base (removed, or failed on head): ${onlyIn.base.join(", ")}`);
 
 const report = lines.join("\n") + "\n";
 if (args.out) writeFileSync(args.out, report);

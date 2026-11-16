@@ -1,62 +1,82 @@
 {
   "name": "splaytree",
   "version": "3.2.4",
-  "author": "Alexander Milevski <alex@milevski.co>",
-  "license": "MIT",
   "description": "Fast Splay tree for Node and browser",
-  "type": "module",
-  "main": "dist/splaytree.umd.cjs",
-  "browser": "dist/splaytree.umd.cjs",
-  "unpkg": "dist/splaytree.umd.cjs",
-  "module": "dist/splaytree.js",
-  "types": "dist/types/index.d.ts",
-  "files": [
-    "dist",
-    "src"
+  "keywords": [
+    "balanced-search-tree",
+    "binary-tree",
+    "bst",
+    "splay",
+    "splay-tree"
   ],
-  "directories": {
-    "test": "tests"
-  },
+  "homepage": "https://w8r.github.io/splay-tree/",
+  "license": "MIT",
+  "author": "Alexander Milevski <alex@milevski.co>",
   "repository": {
     "type": "git",
     "url": "https://github.com/w8r/splay-tree.git"
   },
-  "scripts": {
-    "build": "vite build && npm run types",
-    "types": "tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
-    "test": "vitest",
-    "test:watch": "vitest watch",
-    "bench": "vitest bench",
-    "bench:baseline": "vitest bench --run --outputJson bench/baseline.json",
-    "bench:compare": "vitest bench --run --compare bench/baseline.json",
-    "coverage": "vitest run --coverage",
-    "lint": "oxlint src tests",
-    "prepublishOnly": "npm run build && npm test",
-    "clean": "rm -rf dist coverage .nyc"
+  "directories": {
+    "test": "tests"
   },
-  "devDependencies": {
-    "@vitest/coverage-v8": "4.1.8",
-    "avl": "2.0.0",
-    "bintrees": "1.0.2",
-    "oxlint": "1.35.0",
-    "typescript": "5.8.2",
-    "vite": "8.0.16",
-    "vite-plugin-dts": "4.5.4",
-    "vitest": "4.1.8"
-  },
-  "keywords": [
-    "binary-tree",
-    "bst",
-    "splay-tree",
-    "splay",
-    "balanced-search-tree"
+  "files": [
+    "dist",
+    "src"
   ],
+  "type": "module",
+  "main": "dist/splaytree.umd.cjs",
+  "module": "dist/splaytree.js",
+  "browser": "dist/splaytree.umd.cjs",
+  "types": "dist/types/index.d.ts",
+  "unpkg": "dist/splaytree.umd.cjs",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/splaytree.js",
       "require": "./dist/splaytree.umd.cjs"
     }
+  },
+  "scripts": {
+    "build": "vite build && npm run types",
+    "types": "tsc --declaration --emitDeclarationOnly -p tsconfig.build.json",
+    "site": "vite --config vite.demo.config.ts",
+    "build:site": "vite build --config vite.demo.config.ts",
+    "deploy:site": "npm run build:site && gh-pages --nojekyll -d demo-dist -m 'Deploy site'",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "bench": "vitest bench",
+    "bench:baseline": "vitest bench --run --outputJson bench/baseline.json",
+    "bench:compare": "vitest bench --run --compare bench/baseline.json",
+    "coverage": "vitest run --coverage",
+    "lint": "oxlint --deny-warnings src tests bench demo",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "typecheck": "tsc --noEmit",
+    "prepare": "simple-git-hooks",
+    "prepublishOnly": "npm run build && npm test",
+    "clean": "rm -rf dist demo-dist coverage .nyc"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "4.1.8",
+    "avl": "2.0.0",
+    "bintrees": "1.0.2",
+    "gh-pages": "6.3.0",
+    "lint-staged": "17.6.1",
+    "oxfmt": "0.79.0",
+    "oxlint": "1.35.0",
+    "simple-git-hooks": "2.14.0",
+    "typescript": "5.8.2",
+    "vite": "8.0.16",
+    "vite-plugin-dts": "4.5.4",
+    "vitest": "4.1.8"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,js,mjs,cjs,json,md,html,css,yml,yaml}": "oxfmt --no-error-on-unmatched-pattern",
+    "*.{ts,js,mjs,cjs}": "oxlint --deny-warnings"
   },
   "engines": {
     "node": ">=18.20 || >=20"
