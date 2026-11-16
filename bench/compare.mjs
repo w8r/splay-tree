@@ -6,6 +6,9 @@
 // Usage:
 //   node bench/compare.mjs --base <dir> --head <dir> [--threshold 0.10] [--out report.md]
 //
+// Run the same bench files on both sides (CI copies the head's bench/ into the
+// base checkout), so differences come from the library code, not the benchmarks.
+//
 // <dir> holds one JSON file per round (e.g. round-1.json, round-2.json). Base
 // and head round files are paired by sorted file name, so run them in pairs on
 // the same machine.
@@ -34,7 +37,11 @@ function loadRounds(dir) {
       for (const file of JSON.parse(readFileSync(join(dir, f), "utf8")).files) {
         for (const group of file.groups) {
           const suite = group.fullName.split(" > ").slice(1).join(" > ");
-          for (const b of group.benchmarks) map.set(`${suite}\u0000${b.name}`, b.hz);
+          // A bench that throws (e.g. it calls an API the base doesn't have yet)
+          // reports hz = NaN; leave it out so it shows as measured on one side only.
+          for (const b of group.benchmarks) {
+            if (Number.isFinite(b.hz) && b.hz > 0) map.set(`${suite}\u0000${b.name}`, b.hz);
+          }
         }
       }
       return map;
@@ -98,8 +105,8 @@ const lines = [
   "|---|---|--:|--:|--:|--:|:-:|",
   ...rows,
 ];
-if (onlyIn.head.length) lines.push("", `New in head (not compared): ${onlyIn.head.join(", ")}`);
-if (onlyIn.base.length) lines.push("", `Removed in head (not compared): ${onlyIn.base.join(", ")}`);
+if (onlyIn.head.length) lines.push("", `Only measured on head (new, or failed on base): ${onlyIn.head.join(", ")}`);
+if (onlyIn.base.length) lines.push("", `Only measured on base (removed, or failed on head): ${onlyIn.base.join(", ")}`);
 
 const report = lines.join("\n") + "\n";
 if (args.out) writeFileSync(args.out, report);

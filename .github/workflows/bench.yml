@@ -48,6 +48,11 @@ jobs:
       - run: npm ci
         working-directory: base
 
+      # Benchmark both sides with the PR's bench files, so the comparison measures
+      # library changes, not changes to the benchmarks themselves.
+      - name: Use the PR's benchmarks on the base
+        run: rm -rf base/bench && cp -R head/bench base/bench
+
       - name: Run benchmarks
         run: |
           mkdir -p results/base results/head
