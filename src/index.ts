@@ -85,7 +85,7 @@ function insert<Key, Value>(
     node.left = t.left;
     node.right = t;
     t.left = null;
-  } else if (cmp >= 0) {
+  } else {
     node.right = t.right;
     node.left = t;
     t.right = null;
@@ -194,7 +194,7 @@ export default class Tree<Key = number, Value = unknown> {
         node.left = t.left;
         node.right = t;
         t.left = null;
-      } else if (cmp > 0) {
+      } else {
         node.right = t.right;
         node.left = t;
         t.right = null;
@@ -641,11 +641,8 @@ function mergeLists<Key, Value>(
     p = p.next;
   }
 
-  if (p1 !== null) {
-    p.next = p1;
-  } else if (p2 !== null) {
-    p.next = p2;
-  }
+  // one of the lists is used up: append the rest of the other
+  p.next = p1 !== null ? p1 : p2;
 
   return head.next;
 }
