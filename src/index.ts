@@ -72,14 +72,44 @@ function splay<Key, Value>(
  * with an equal key, which can still have a left subtree.
  */
 function splayMin<Key, Value>(t: Node<Key, Value>): Node<Key, Value> {
-  return splay(t.key, t, () => -1);
+  const N = new Node<Key, Value>(null as Key);
+  let r = N;
+  while (t.left !== null) {
+    const y = t.left; /* rotate right */
+    t.left = y.right;
+    y.right = t;
+    t = y;
+    if (t.left === null) break;
+    r.left = t; /* link right */
+    r = t;
+    t = t.left;
+  }
+  /* assemble: nothing was linked left */
+  r.left = t.right;
+  t.right = N.left;
+  return t;
 }
 
 /**
  * Splays the rightmost (largest) node of t to the root.
  */
 function splayMax<Key, Value>(t: Node<Key, Value>): Node<Key, Value> {
-  return splay(t.key, t, () => 1);
+  const N = new Node<Key, Value>(null as Key);
+  let l = N;
+  while (t.right !== null) {
+    const y = t.right; /* rotate left */
+    t.right = y.left;
+    y.left = t;
+    t = y;
+    if (t.right === null) break;
+    l.right = t; /* link left */
+    l = t;
+    t = t.right;
+  }
+  /* assemble: nothing was linked right */
+  l.right = t.left;
+  t.left = N.right;
+  return t;
 }
 
 function insert<Key, Value>(
