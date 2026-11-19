@@ -92,12 +92,32 @@ for (const key of keys) {
   const improved = Math.min(...ratios) > 1 + threshold;
   if (regressed) regressions.push(label);
 
-  rows.push(
-    `| ${suite} | ${name} | ${ops(median(base.map((r) => r.get(key))))} | ` +
-      `${ops(median(head.map((r) => r.get(key))))} | ${pct(ratio)} | ` +
-      `${ratios.map(pct).join(" / ")} | ${regressed ? "🔴" : improved ? "🟢" : "⚪"} |`,
-  );
+  rows.push({
+    suite,
+    cells: [
+      name,
+      ops(median(base.map((r) => r.get(key)))),
+      ops(median(head.map((r) => r.get(key)))),
+      `${regressed ? "🔴" : improved ? "🟢" : "⚪"} ${pct(ratio)}`,
+      ratios.map(pct).join(" / "),
+    ],
+  });
 }
+
+// HTML instead of a markdown table so each suite name spans its cases (rowspan).
+// Keys keep the bench file order, so cases of one suite are contiguous.
+const td = (c, i) => (i === 0 ? `<td>${c}</td>` : `<td align="right">${c}</td>`);
+const table = [
+  "<table>",
+  "<tr><th>Suite</th><th>Case</th><th>base (ops/s)</th><th>head (ops/s)</th><th>Δ</th><th>per round</th></tr>",
+  ...rows.map(({ suite, cells }, i) => {
+    const first = i === 0 || rows[i - 1].suite !== suite;
+    const span = first ? rows.slice(i).findIndex((r) => r.suite !== suite) : 0;
+    const lead = first ? `<td rowspan="${span === -1 ? rows.length - i : span}">${suite}</td>` : "";
+    return `<tr>${lead}${cells.map(td).join("")}</tr>`;
+  }),
+  "</table>",
+];
 
 const limit = `${Math.round(threshold * 100)}%`;
 const lines = [
@@ -112,9 +132,7 @@ const lines = [
     "ops/s is the median across rounds; Δ is the median per-round change. " +
     `A case is flagged only if all rounds agree. Differences under ~${limit} are noise on shared CI runners.`,
   "",
-  "| Suite | Case | base (ops/s) | head (ops/s) | Δ | per round | |",
-  "|---|---|--:|--:|--:|--:|:-:|",
-  ...rows,
+  ...table,
 ];
 if (onlyIn.head.length)
   lines.push("", `Only measured on head (new, or failed on base): ${onlyIn.head.join(", ")}`);
