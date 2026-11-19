@@ -67,7 +67,7 @@
     "oxlint": "1.35.0",
     "simple-git-hooks": "2.14.0",
     "typescript": "5.8.2",
-    "vite": "8.0.16",
+    "vite": "8.3.8",
     "vite-plugin-dts": "4.5.4",
     "vitest": "4.1.8"
   },
