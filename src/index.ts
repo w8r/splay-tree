@@ -66,6 +66,52 @@ function splay<Key, Value>(
   return t;
 }
 
+/**
+ * Splays the leftmost (smallest) node of t to the root. Splaying by its key
+ * is not enough when t has duplicate keys: splay() stops at the first node
+ * with an equal key, which can still have a left subtree.
+ */
+function splayMin<Key, Value>(t: Node<Key, Value>): Node<Key, Value> {
+  const N = new Node<Key, Value>(null as Key);
+  let r = N;
+  while (t.left !== null) {
+    const y = t.left; /* rotate right */
+    t.left = y.right;
+    y.right = t;
+    t = y;
+    if (t.left === null) break;
+    r.left = t; /* link right */
+    r = t;
+    t = t.left;
+  }
+  /* assemble: nothing was linked left */
+  r.left = t.right;
+  t.right = N.left;
+  return t;
+}
+
+/**
+ * Splays the rightmost (largest) node of t to the root.
+ */
+function splayMax<Key, Value>(t: Node<Key, Value>): Node<Key, Value> {
+  const N = new Node<Key, Value>(null as Key);
+  let l = N;
+  while (t.right !== null) {
+    const y = t.right; /* rotate left */
+    t.right = y.left;
+    y.left = t;
+    t = y;
+    if (t.right === null) break;
+    l.right = t; /* link left */
+    l = t;
+    t = t.right;
+  }
+  /* assemble: nothing was linked right */
+  l.right = t.left;
+  t.left = N.right;
+  return t;
+}
+
 function insert<Key, Value>(
   i: Key,
   data: Value | undefined,
@@ -123,15 +169,11 @@ function split<Key, Value>(
   return { left, right };
 }
 
-function merge<Key, Value>(
-  left: Node<Key, Value> | null,
-  right: Node<Key, Value> | null,
-  comparator: Comparator<Key>,
-) {
+function merge<Key, Value>(left: Node<Key, Value> | null, right: Node<Key, Value> | null) {
   if (right === null) return left;
   if (left === null) return right;
 
-  right = splay(left.key, right, comparator);
+  right = splayMin(right);
   right.left = left;
   return right;
 }
@@ -231,7 +273,7 @@ export default class Tree<Key = number, Value = unknown> {
       if (t.left === null) {
         x = t.right!;
       } else {
-        x = splay(i, t.left, comparator);
+        x = splayMax(t.left);
         x.right = t.right;
       }
       this._size--;
@@ -244,14 +286,11 @@ export default class Tree<Key = number, Value = unknown> {
    * Removes and returns the node with smallest key
    */
   public pop(): { key: Key; data: Value } | null {
-    let node = this._root;
-    if (node) {
-      while (node.left) node = node.left;
-      this._root = splay(node.key, this._root!, this._comparator);
-      this._root = this._remove(node.key, this._root, this._comparator);
-      return { key: node.key, data: node.data };
-    }
-    return null;
+    if (this._root === null) return null;
+    const node = splayMin(this._root);
+    this._root = node.right;
+    this._size--;
+    return { key: node.key, data: node.data };
   }
 
   /**
@@ -515,7 +554,7 @@ export default class Tree<Key = number, Value = unknown> {
     } else {
       left = insert(newKey, newData, left, comparator);
     }
-    this._root = merge(left, right, comparator);
+    this._root = merge(left, right);
   }
 
   public split(key: Key): {
