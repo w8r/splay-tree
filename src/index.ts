@@ -454,13 +454,20 @@ export default class Tree<Key = number, Value = unknown> {
     }
 
     const comparator = this._comparator;
-    while (root) {
+    // A node with the same key as d is not always d: then d can be in either
+    // subtree, so keep the right one to search later.
+    const pending: (Node<Key, Value> | null)[] = [];
+    while (root !== null && root !== d) {
       const cmp = comparator(d.key, root.key);
-      if (cmp === 0) break;
-      else if (cmp < 0) {
+      if (cmp === 0) pending.push(successor, root.right);
+      if (cmp <= 0) {
         successor = root;
         root = root.left;
       } else root = root.right;
+      while (root === null && pending.length > 0) {
+        root = pending.pop()!;
+        successor = pending.pop()!;
+      }
     }
 
     return successor;
@@ -477,13 +484,19 @@ export default class Tree<Key = number, Value = unknown> {
     }
 
     const comparator = this._comparator;
-    while (root) {
+    // Same as in next(): keep the left subtree of an equal key to search later.
+    const pending: (Node<Key, Value> | null)[] = [];
+    while (root !== null && root !== d) {
       const cmp = comparator(d.key, root.key);
-      if (cmp === 0) break;
-      else if (cmp < 0) root = root.left;
+      if (cmp === 0) pending.push(predecessor, root.left);
+      if (cmp < 0) root = root.left;
       else {
         predecessor = root;
         root = root.right;
+      }
+      while (root === null && pending.length > 0) {
+        root = pending.pop()!;
+        predecessor = pending.pop()!;
       }
     }
     return predecessor;
