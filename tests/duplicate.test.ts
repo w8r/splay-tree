@@ -114,6 +114,46 @@ describe("Duplicate keys", () => {
     expect(tree.size).toBe(5);
   });
 
+  it("should walk every node with next() and prev() when keys have duplicates", () => {
+    const tree = new Tree<number, string>();
+    tree.insert(1, "a");
+    tree.insert(1, "b");
+    tree.insert(2, "c");
+
+    const forward: string[] = [];
+    for (let n = tree.minNode(); n; n = tree.next(n)) forward.push(n.data!);
+    expect(forward).toEqual(["a", "b", "c"]);
+
+    const other = new Tree<number, string>();
+    other.insert(1, "a");
+    other.insert(1, "b");
+    other.insert(0, "c");
+
+    const backward: string[] = [];
+    for (let n = other.maxNode(); n; n = other.prev(n)) backward.push(n.data!);
+    expect(backward).toEqual(["b", "a", "c"]);
+  });
+
+  it("should match in-order traversal with next() and prev() for shuffled duplicates", () => {
+    let seed = 1;
+    for (let run = 0; run < 50; run++) {
+      const tree = new Tree<number, number>();
+      for (let i = 0; i < 20; i++) {
+        seed = (seed * 16807) % 2147483647;
+        tree.insert(seed % 5, i);
+      }
+      const values = tree.values();
+
+      const forward: number[] = [];
+      for (let n = tree.minNode(); n; n = tree.next(n)) forward.push(n.data!);
+      expect(forward).toEqual(values);
+
+      const backward: number[] = [];
+      for (let n = tree.maxNode(); n; n = tree.prev(n)) backward.push(n.data!);
+      expect(backward).toEqual(values.reverse());
+    }
+  });
+
   it("should disallow duplicates if noDuplicates is set", () => {
     const tree = new Tree();
     const values = [2, 12, 1, -6, 1];
